@@ -153,7 +153,7 @@ int main(){
 
     // plus_grand_premier_is_prime_naive_en_temps_donne(3, 0.002);
 
-    long p = random_prime_number(1,31,1);
+    long p = random_prime_number(1,31,10);
     printf("Nombre premier généré aléatoirement : %ld\n", p);
     printf("Teste si c'est bien un nombre premier avec is_prime_naive: %d\n", is_prime_naive(p));
 
