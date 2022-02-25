@@ -24,8 +24,8 @@ int is_prime_naive(long p){
 }
 long modpow_naive(long a,long m, long n){
     int res=1;
-    for (int j=0;j<m;j++){
-        res=(res*a%n);
+    for (int i=0; i<m; i++){
+        res = (res * a % n);
     }
     return res;
 }
@@ -35,14 +35,10 @@ long modpow(long a,long m,long n){
         return a%n;
     }
     else{
-        if(m%2==0){
-            //b=fmod(powl(a,(m/2)),n);
+        if(m%2==0){ //si m est pair
             b = modpow(a, m/2, n);
             return fmod(b*b, n);
-            //return modpow(fmod(b * b, n),m-1,n);
-        }else{
-            //b=fmod(powl(a,floor(m/2)),n);
-            //return modpow(fmod(a* b * b, n),m-1,n);
+        }else{ //si m est impair
             b = modpow(a, (int)(m/2), n);
             return fmod(a*b*b, n);
         }
@@ -74,15 +70,41 @@ void plus_grand_premier_is_prime_naive_en_temps_donne(long p, double s){
 }
 
 int main(){
-    // int max =10000;
-    // int res=0;
-    // int res2=0;
+    long res;
+    long res2;
+    int m;
+    int m_max = 10000;
+    long a = 2;
+    long n = 2;
 
-    plus_grand_premier_is_prime_naive_en_temps_donne(3, 0.002);
+    // plus_grand_premier_is_prime_naive_en_temps_donne(3, 0.002);
 
-    // res=modpow_naive(142,7,187);
-    // printf("%d\n",res);
-    // res2=modpow(142,7,187);
-    // printf("%d\n",res2);
+    FILE * f = fopen("sortie_vitesse.txt", "w");
+	if (f == NULL){
+		printf("Erreur lors de l'ouverture de %s\n", "sortie_vitesse.txt");
+		return 1;
+	}
+
+    for (m = 1; m <= m_max; m++){
+		printf("Pour m = %d :\n", m);
+		printf("Pour la fonction modpow_naive :\n");
+		temps_initial = clock();
+        res=modpow_naive(a, m, n);
+		temps_final = clock();
+		temps_cpu1 = ((double)(temps_final - temps_initial)) / CLOCKS_PER_SEC;
+		printf("Valeur retournée par la foncton = %ld, temps_cpu = %f\n", res, temps_cpu1);
+
+		printf("===============\n");
+		printf("Pour la fonction modpow :\n");
+		temps_initial = clock();
+		res2=modpow(a, m, n);
+		temps_final = clock();
+		temps_cpu2 = ((double)(temps_final - temps_initial)) / CLOCKS_PER_SEC;
+		printf("Valeur retournée par la foncton = %ld, temps_cpu = %f\n", res2, temps_cpu2);
+		printf("==============================================================\n");
+
+		fprintf(f,"%d %f %f\n", m, temps_cpu1, temps_cpu2); //écriture des résultats dans le fd f
+	}
+	fclose(f);
 
 }
