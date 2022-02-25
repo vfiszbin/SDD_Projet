@@ -23,7 +23,7 @@ int is_prime_naive(long p){
 
 }
 long modpow_naive(long a,long m, long n){
-    int i=0,res=1;
+    int res=1;
     for (int j=0;j<m;j++){
         res=(res*a%n);
     }
@@ -49,32 +49,36 @@ long modpow(long a,long m,long n){
     }
 }
 
-
-
-int main(){
-    int max =10000;
-    int res=0;
-    int res2=0;
-	long p = 100001;
+/*Calcul du plus grand nombre premier trouvable en moins de s secondes avec is_prime_naive en partant de l'entier impair p*/
+void plus_grand_premier_is_prime_naive_en_temps_donne(long p, double s){
 	long dernier_premier;
-
-	//Calcul du plus grand nombre premier trouvable en moins de 2 millemes de secondes avec is_prime_naive
+	double dernier_premier_CPU;
+    int res=0;
+    
 	temps_cpu1 = 0;
-    while (temps_cpu1 < 0.002){
+    while (temps_cpu1 < s){
 		temps_initial = clock () ; //Nombre de ‘‘ticks’’ consomm’es par le programme jusqu’ici
 		res = is_prime_naive(p);
 		temps_final = clock () ; //Nombre de ‘‘ticks’’ consomm’es par le programme jusqu’ici
 		//On convertit les ‘‘ticks’’ consomm’es par fct en secondes :
 		temps_cpu1 = ((double)(temps_final - temps_initial))/CLOCKS_PER_SEC;
         printf("p=%ld, premier=%d, temps CPU=%f\n", p, res, temps_cpu1);
-		if (res == 1){
+		if (res == 1 && (temps_cpu1 < s)){
 			dernier_premier = p; //sauvegarde le dernier nombre premier trouve
-            res = 0;
+            dernier_premier_CPU = temps_cpu1;
         }
 		p+=2;
+        res = 0;
     }
-	printf("Dernier nombre premier trouvé=%ld, temps CPU=%f\n", dernier_premier, temps_cpu1);
+	printf("Dernier nombre premier trouvé=%ld, temps CPU=%f\n", dernier_premier, dernier_premier_CPU);
+}
 
+int main(){
+    // int max =10000;
+    // int res=0;
+    // int res2=0;
+
+    plus_grand_premier_is_prime_naive_en_temps_donne(3, 0.002);
 
     // res=modpow_naive(142,7,187);
     // printf("%d\n",res);
