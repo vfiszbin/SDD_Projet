@@ -9,6 +9,7 @@
 
 long rand_long(long low, long up);
 long random_prime_number(int low_size, int up_size, int k);
+long modpow_naive(long a,long m, long n);
 long modpow(long a,long m,long n);
 
 

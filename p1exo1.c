@@ -31,7 +31,7 @@ long modpow_naive(long a,long m, long n){
 
 /*Retourne la valeur a^m mod n*/
 long modpow(long a,long m,long n){
-    long double b;
+    long b;
     if(m==1){
         return a%n;
     }
