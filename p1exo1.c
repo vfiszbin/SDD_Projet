@@ -19,6 +19,8 @@ int is_prime_naive(long p){
 	return 1;
 
 }
+
+/*Retourne la valeur a^m mod n par la methode naive*/
 long modpow_naive(long a,long m, long n){
     int res=1;
     for (int i=0; i<m; i++){
@@ -26,6 +28,8 @@ long modpow_naive(long a,long m, long n){
     }
     return res;
 }
+
+/*Retourne la valeur a^m mod n*/
 long modpow(long a,long m,long n){
     long double b;
     if(m==1){
