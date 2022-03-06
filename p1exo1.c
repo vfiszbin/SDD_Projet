@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
+#include "p1exo1.h"
 
 clock_t temps_initial;
 clock_t temps_final;
@@ -119,6 +116,7 @@ int is_prime_miller(long p, int k) {
     return 1; 
 }
 
+/*Retourne un nombre premier de taille comprise entre low size et up size, avec k le nombre de tests de Miller a realiser*/
 long random_prime_number(int low_size, int up_size, int k){ 
 
     if (low_size <= 0 || up_size <= 0 || low_size >= 32 || up_size >= 32){ //un long est codé sur 32 bits et signé, valeur max = 2^(k-1) - 1
@@ -127,8 +125,6 @@ long random_prime_number(int low_size, int up_size, int k){
     }
     long low = 1 << (low_size - 1); // 2^(low_size - 1) entier minimum codé sur low_size bits
     long up = (1 << (up_size)) - 1; // 2^(up_size) - 1 entier maximum codé sur up_size bits
-    printf("low=%lu\n",low);
-    printf("up=%lu\n",up);
 
     int is_prime = 0;
     long p;
@@ -141,49 +137,49 @@ long random_prime_number(int low_size, int up_size, int k){
 }
 
 
-int main(){
-    srand(time(NULL));
+// int main(){
+//     srand(time(NULL));
 
-    // long res;
-    // long res2;
-    // int m;
-    // int m_max = 10000;
-    // long a = 2;
-    // long n = 2;
+//     // long res;
+//     // long res2;
+//     // int m;
+//     // int m_max = 10000;
+//     // long a = 2;
+//     // long n = 2;
 
-    // plus_grand_premier_is_prime_naive_en_temps_donne(3, 0.002);
+//     // plus_grand_premier_is_prime_naive_en_temps_donne(3, 0.002);
 
-    long p = random_prime_number(1,31,10);
-    printf("Nombre premier généré aléatoirement : %ld\n", p);
-    printf("Teste si c'est bien un nombre premier avec is_prime_naive: %d\n", is_prime_naive(p));
+//     long p = random_prime_number(1,31,10);
+//     printf("Nombre premier généré aléatoirement : %ld\n", p);
+//     printf("Teste si c'est bien un nombre premier avec is_prime_naive: %d\n", is_prime_naive(p));
 
 
-    // FILE * f = fopen("sortie_vitesse.txt", "w");
-	// if (f == NULL){
-	// 	printf("Erreur lors de l'ouverture de %s\n", "sortie_vitesse.txt");
-	// 	return 1;
-	// }
+//     // FILE * f = fopen("sortie_vitesse.txt", "w");
+// 	// if (f == NULL){
+// 	// 	printf("Erreur lors de l'ouverture de %s\n", "sortie_vitesse.txt");
+// 	// 	return 1;
+// 	// }
 
-    // for (m = 1; m <= m_max; m++){
-	// 	printf("Pour m = %d :\n", m);
-	// 	printf("Pour la fonction modpow_naive :\n");
-	// 	temps_initial = clock();
-    //     res=modpow_naive(a, m, n);
-	// 	temps_final = clock();
-	// 	temps_cpu1 = ((double)(temps_final - temps_initial)) / CLOCKS_PER_SEC;
-	// 	printf("Valeur retournée par la foncton = %ld, temps_cpu = %f\n", res, temps_cpu1);
+//     // for (m = 1; m <= m_max; m++){
+// 	// 	printf("Pour m = %d :\n", m);
+// 	// 	printf("Pour la fonction modpow_naive :\n");
+// 	// 	temps_initial = clock();
+//     //     res=modpow_naive(a, m, n);
+// 	// 	temps_final = clock();
+// 	// 	temps_cpu1 = ((double)(temps_final - temps_initial)) / CLOCKS_PER_SEC;
+// 	// 	printf("Valeur retournée par la foncton = %ld, temps_cpu = %f\n", res, temps_cpu1);
 
-	// 	printf("===============\n");
-	// 	printf("Pour la fonction modpow :\n");
-	// 	temps_initial = clock();
-	// 	res2=modpow(a, m, n);
-	// 	temps_final = clock();
-	// 	temps_cpu2 = ((double)(temps_final - temps_initial)) / CLOCKS_PER_SEC;
-	// 	printf("Valeur retournée par la foncton = %ld, temps_cpu = %f\n", res2, temps_cpu2);
-	// 	printf("==============================================================\n");
+// 	// 	printf("===============\n");
+// 	// 	printf("Pour la fonction modpow :\n");
+// 	// 	temps_initial = clock();
+// 	// 	res2=modpow(a, m, n);
+// 	// 	temps_final = clock();
+// 	// 	temps_cpu2 = ((double)(temps_final - temps_initial)) / CLOCKS_PER_SEC;
+// 	// 	printf("Valeur retournée par la foncton = %ld, temps_cpu = %f\n", res2, temps_cpu2);
+// 	// 	printf("==============================================================\n");
 
-	// 	fprintf(f,"%d %f %f\n", m, temps_cpu1, temps_cpu2); //écriture des résultats dans le fd f
-	// }
-	// fclose(f);
+// 	// 	fprintf(f,"%d %f %f\n", m, temps_cpu1, temps_cpu2); //écriture des résultats dans le fd f
+// 	// }
+// 	// fclose(f);
 
-}
+// }
