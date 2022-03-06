@@ -37,7 +37,7 @@ long *encrypt(char *chaine, long s, long n){
 	int m;
 	while(chaine[i]){
 		m = chaine[i];
-		crypted[i] = modpow_naive(m, s, n); //encrypte le char. m doit etre inferieur a n !
+		crypted[i] = modpow(m, s, n); //encrypte le char. m doit etre inferieur a n !
 		i++;
 	}
 	return crypted;
@@ -53,7 +53,7 @@ char *decrypt (long *crypted, int size, long u, long n){
 	long c;
 	for (i = 0; i < size; i++){
 		c = crypted[i];
-		chaine[i] = modpow_naive(c, u, n); //decrypte le char
+		chaine[i] = modpow(c, u, n); //decrypte le char
 	}
 	chaine[i] = '\0';
 	return chaine;
