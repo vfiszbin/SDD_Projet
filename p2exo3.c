@@ -45,6 +45,8 @@ Key* str_to_key(char* str){
     long val,n;
     sscanf(str,"(%lx,%lx)",&val,&n);
     Key* cle = malloc (sizeof(Key));
+    if (cle == NULL)
+        return NULL;
     cle->val=val;
     cle->n=n;
     return cle;
@@ -55,8 +57,8 @@ Signature* init_signature(long* content, int size){
     if(s==NULL){
         return NULL;
     }
-    s->tab=content;
-    s->taille=size;
+    s->content=content;
+    s->size=size;
     return s;
 }
 

@@ -12,8 +12,8 @@ typedef struct key{
 } Key;
 
 typedef struct signature{
-    long* tab;
-    int taille;
+    long* content;
+    int size;
 } Signature;
 
 
