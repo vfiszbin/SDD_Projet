@@ -2,6 +2,13 @@
 #include "p1exo2.h"
 #include "p2exo3.h"
 
+void print_long_vector(long *result, int size){
+	printf("Vector: [");
+	for (int i=0; i<size; i++){
+		printf("%lx \t", result[i]);
+	}
+	printf("]\n");
+}
 
 int main (void) {
     srand(time (NULL)) ;
@@ -32,18 +39,18 @@ int main (void) {
     sgn = str_to_signature(chaine);
     printf("str to signature : "); print_long_vector(sgn->content,sgn->size);
 
-    //Testing protected:
-    Protected* pr = init_protected(pKey,mess, sgn);
-    //Verification:
-    if (verify(pr)){ printf("Signature valide\n");
-    }else{
-    printf("Signature non valide\n");
-    }
-    chaine = protected_to_str(pr);
-    printf(" protected to str : %s\n", chaine);
-    pr = str_to_protected(chaine);
-    printf("str to protected : %s %s %s\n",key_to_str(pr->pKey),pr->mess,
-    signature_to_str(pr->sgn));
+    // //Testing protected:
+    // Protected* pr = init_protected(pKey,mess, sgn);
+    // //Verification:
+    // if (verify(pr)){ printf("Signature valide\n");
+    // }else{
+    // printf("Signature non valide\n");
+    // }
+    // chaine = protected_to_str(pr);
+    // printf(" protected to str : %s\n", chaine);
+    // pr = str_to_protected(chaine);
+    // printf("str to protected : %s %s %s\n",key_to_str(pr->pKey),pr->mess,
+    // signature_to_str(pr->sgn));
 
     free(pKey); 
     free(sKey); 
