@@ -27,7 +27,7 @@ void init_pair_keys(Key* pkey,Key* skey, long low_size, long up_size){
 
 }
 
-/*Permet de passer d’une variable de type Key a sa representation sous forme de chaine de caracteres*/
+/*Permet de passer d'une variable de type Key a sa representation sous forme de chaine de caracteres*/
 char* key_to_str (Key* key){
     long a,b;
     char* u = (char*)malloc (20*sizeof(char));
@@ -66,7 +66,7 @@ Signature* init_signature(long* content, int size){
     return s;
 }
 
-/*Cree une signature a partir du message mess (declaration de vote) et de la cle secrete sKey de l’emetteur*/
+/*Cree une signature a partir du message mess (declaration de vote) et de la cle secrete sKey de l'emetteur*/
 Signature* sign(char* mess, Key* sKey){
     long* content = encrypt(mess, sKey->val ,sKey->n);
     Signature* sgn = init_signature(content, strlen(mess));
@@ -74,6 +74,25 @@ Signature* sign(char* mess, Key* sKey){
 }
 
 
+/*Permet de passer d'une signature sgn a sa representation sous forme de chaine de caracteres*/
+char* signature_to_str(Signature* sgn){
+    char* result = malloc(10*sgn->size*sizeof(char)); 
+    result[0]= '#';
+    int pos = 1;
+    char buffer [156];
+    for (int i=0; i<sgn->size; i++){ 
+        sprintf(buffer, "%lx", sgn->content[i]); 
+        for (int j=0; j< strlen(buffer); j++){
+            result[pos] = buffer[j];
+            pos = pos +1; 
+        }
+        result[pos] = '#';
+        pos = pos +1; 
+        }
+    result[pos] = '\0';
+    result = realloc(result, (pos+1)*sizeof(char)); 
+    return result;
+}
 
 
 
