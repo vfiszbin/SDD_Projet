@@ -112,11 +112,14 @@ Signature* str_to_signature(char* str){
     char buffer [256];
     int pos = 0;
     for (int i=0; i<len; i++){
-        if (str[i] != '#'){ buffer[pos] = str[i]; pos=pos+1;
+        if (str[i] != '#'){ 
+            buffer[pos] = str[i]; 
+            pos=pos+1;
         }else{
             if (pos != 0){
                 buffer[pos] = '\0';
-                sscanf(buffer, "%lx", &(content[num])); num = num + 1;
+                sscanf(buffer, "%lx", &(content[num])); 
+                num = num + 1;
                 pos = 0;
             } 
         }
@@ -147,4 +150,80 @@ int verify(Protected* pr){
     return strcmp(decrypted_mess, pr->mess) == 0;
 }
 
+/*Permet de passer d'un Protected a sa representation sous forme de chaine de caracteres*/
+char* protected_to_str (Protected* pr){
+    char *pKey = key_to_str(pr->pKey);
+    if (!pKey)
+        return NULL;
+    char *sgn = signature_to_str(pr->sgn);
+    if (!sgn)
+        return NULL;
+
+    int size = strlen(pKey) + strlen(sgn) + strlen(pr->mess) + 3; //taille de la chaine de caracteres a retourner
+    char *result = (char*) malloc(sizeof(char) * size);
+    if (!result)
+        return NULL;
+
+    int i = 0;
+    int j = 0;
+    while(pKey[j]){ //copie la cle publique dans la chaine a retourner
+        result[i] = pKey[j];
+        i++;
+        j++;
+    }
+    result[i] = ' '; //place un espace entre les chaines
+    i++;
+    j = 0;
+    while(pr->mess[j]){ //copie le message dans la chaine a retourner
+        result[i] = pr->mess[j];
+        i++;
+        j++;
+    }
+    result[i] = ' '; //place un espace entre les chaines
+    i++;
+    j = 0;
+    while(sgn[j]){ //copie la signature dans la chaine a retourner
+        result[i] = sgn[j];
+        i++;
+        j++;
+    }
+    result[i] = '\0';
+
+    return result;
+}
+
+/*Alloue, initialise et retourne une signature a partir de sa representation sous forme de chaine de caracteres*/
+Protected* str_to_protected (char* str){
+    Protected *pr = (Protected*) malloc(sizeof(Protected));
+    if (!pr)
+        return NULL;
+
+    char buffer_pKey [256];
+    char buffer_mess [256];
+    char buffer_sgn [256];
+    sscanf(str, "%s %s %s", buffer_pKey, buffer_mess, buffer_sgn);
+
+    pr->pKey = str_to_key(buffer_pKey);
+    if (!pr->pKey){
+        free(pr);
+        return NULL;
+    }
+    pr->mess = strdup(buffer_mess);
+    if (!pr->mess){
+        free(pr->pKey);
+        free(pr);
+        return NULL;
+    }
+    pr->sgn = str_to_signature(buffer_sgn);
+    if (!pr->sgn){
+        free(pr->pKey);
+        free(pr->mess);
+        free(pr);
+        return NULL;
+    }
+
+    return pr;
+    
+    
+}
 

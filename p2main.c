@@ -42,19 +42,23 @@ int main (void) {
     //Testing protected:
     Protected* pr = init_protected(pKey, mess, sgn);
     //Verification:
-    if (verify(pr)){ printf("Signature valide\n");
+    if (verify(pr)){ 
+        printf("Signature valide\n");
     }else{
-    printf("Signature non valide\n");
+        printf("Signature non valide\n");
     }
-    // chaine = protected_to_str(pr);
-    // printf(" protected to str : %s\n", chaine);
-    // pr = str_to_protected(chaine);
-    // printf("str to protected : %s %s %s\n",key_to_str(pr->pKey),pr->mess,
-    // signature_to_str(pr->sgn));
+    chaine = protected_to_str(pr);
+    printf(" protected to str : %s\n", chaine);
+    pr = str_to_protected(chaine);
+    printf("str to protected : %s %s %s\n", key_to_str(pr->pKey), pr->mess, signature_to_str(pr->sgn));
 
     free(pKey); 
     free(sKey); 
     free(pKeyC); 
     free(sKeyC);
+    free(chaine);
+    free(sgn);
+    free(pr);
+
     return 0;
 }
