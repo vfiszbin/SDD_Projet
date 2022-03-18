@@ -77,7 +77,8 @@ Signature* sign(char* mess, Key* sKey){
 /*Permet de passer d'une signature sgn a sa representation sous forme de chaine de caracteres*/
 char* signature_to_str(Signature* sgn){
     char* result = malloc(10*sgn->size*sizeof(char));
-    assert( result != NULL );
+    if (!result)
+        return NULL;
     result[0]= '#';
     int pos = 1;
     char buffer [156];
@@ -98,8 +99,10 @@ char* signature_to_str(Signature* sgn){
 /*Alloue, initialise et retourne une signature a partir de sa representation sous forme de chaine de caracteres*/
 Signature* str_to_signature(char* str){
     int len = strlen(str);
-    long* content = (long*)malloc(sizeof(long)*len); int num = 0;
-    assert( content != NULL );
+    long* content = (long*)malloc(sizeof(long)*len); 
+    int num = 0;
+    if (!content)
+        return NULL;
     char buffer [256];
     int pos = 0;
     for (int i=0; i<len; i++){
@@ -113,7 +116,8 @@ Signature* str_to_signature(char* str){
         }
     }
     content=realloc(content ,num*sizeof(long)); 
-    assert( content != NULL );
+    if (!content)
+        return NULL;
     return init_signature(content , num);
 }
 
