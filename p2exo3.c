@@ -76,6 +76,8 @@ Signature* init_signature(long* content, int size){
 Signature* sign(char* mess, Key* sKey){
     long* content = encrypt(mess, sKey->val ,sKey->n);
     Signature* sgn = init_signature(content, strlen(mess));
+    if (!sgn)
+        return NULL;
     return sgn;
 }
 
