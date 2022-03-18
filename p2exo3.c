@@ -121,5 +121,20 @@ Signature* str_to_signature(char* str){
     return init_signature(content , num);
 }
 
+/*Alloue, initialise et retourne une structure Protected avec la clé publique pKey, le message mess et la signature sgn*/
+Protected* init_protected(Key* pKey, char* mess, Signature* sgn){
+    Protected *pr = malloc(sizeof(Protected));
+    if (!pr)
+        return NULL;
+    pr->pKey = pKey;
+    pr->mess = mess;
+    pr->sgn = sgn;
+    return pr;
+}
+
+/*Verifie que la signature contenue dans pr correspond bien au message et a la personne contenus dans pr*/
+int verify(Protected* pr){
+
+}
 
 
