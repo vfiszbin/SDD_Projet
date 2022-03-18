@@ -63,9 +63,9 @@ Signature* init_signature(long* content, int size){
 }
 
 Signature* sign(char* mes, Key* sKey){
-    long* tab=encrypt(mes,sKey->val,sKey->n);
-    Signature* s=init_signature(tab,strlen(mes));
-    return mes;
+    long* content = encrypt(mes, sKey->val ,sKey->n);
+    Signature* sgn = init_signature(content, strlen(mes));
+    return sgn;
 }
 
 
