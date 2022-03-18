@@ -21,7 +21,13 @@ void init_pair_keys(Key* pkey,Key* skey, long low_size, long up_size){
 		q = random_prime_number(3,7, 5000); 
 	}
 	long n, s, u; 
-	generate_key_values(p,q,&n,&s,&u); 
+	generate_key_values(p,q,&n,&s,&u);
+    //Pour avoir des cles positives : 
+	if (u<0){
+		long t = (p-1)*(q-1);
+		u = u+t; //on aura toujours s*u mod t = 1 
+	}
+
     init_key(pkey,s,n);
     init_key(skey,u,n);
 
@@ -134,7 +140,11 @@ Protected* init_protected(Key* pKey, char* mess, Signature* sgn){
 
 /*Verifie que la signature contenue dans pr correspond bien au message et a la personne contenus dans pr*/
 int verify(Protected* pr){
+    char *decrypted_mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKey->val, pr->pKey->n);
+    if (!decrypted_mess)
+        return -1;
 
+    return strcmp(decrypted_mess, pr->mess) == 0;
 }
 
 

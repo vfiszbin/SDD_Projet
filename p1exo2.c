@@ -34,7 +34,7 @@ long *encrypt(char *chaine, long s, long n){
 	if (!crypted)
 		return NULL;
 	int i = 0;
-	int m;
+	long m;
 	while(chaine[i]){
 		m = chaine[i];
 		crypted[i] = modpow_naive(m, s, n); //encrypte le char. m doit etre inferieur a n !

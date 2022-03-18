@@ -28,24 +28,24 @@ int main (void) {
     //Testing signature
     //Candidate keys:
     Key* pKeyC = malloc(sizeof(Key));
-    Key* sKeyC = malloc(sizeof(Key)); init_pair_keys(pKeyC, sKeyC,3,7);
+    Key* sKeyC = malloc(sizeof(Key)); init_pair_keys(pKeyC, sKeyC, 3, 7);
     //Declaration:
     char* mess = key_to_str(pKeyC);
     printf("%s vote pour %s\n",key_to_str(pKey), mess); 
     Signature* sgn = sign(mess, sKey); 
-    printf("signature : "); print_long_vector(sgn->content,sgn->size);
+    printf("signature : "); print_long_vector(sgn->content, sgn->size);
     chaine = signature_to_str(sgn);
     printf(" signature to str : %s \n", chaine);
     sgn = str_to_signature(chaine);
     printf("str to signature : "); print_long_vector(sgn->content,sgn->size);
 
-    // //Testing protected:
-    // Protected* pr = init_protected(pKey,mess, sgn);
-    // //Verification:
-    // if (verify(pr)){ printf("Signature valide\n");
-    // }else{
-    // printf("Signature non valide\n");
-    // }
+    //Testing protected:
+    Protected* pr = init_protected(pKey, mess, sgn);
+    //Verification:
+    if (verify(pr)){ printf("Signature valide\n");
+    }else{
+    printf("Signature non valide\n");
+    }
     // chaine = protected_to_str(pr);
     // printf(" protected to str : %s\n", chaine);
     // pr = str_to_protected(chaine);
