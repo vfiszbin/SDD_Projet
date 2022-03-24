@@ -29,8 +29,6 @@ int main (void) {
     printf("pKey: %lx , %lx \n",pKey->val, pKey->n);
     printf ("sKey : %lx , %lx \n",sKey->val, sKey->n);
 
-    generate_random_data(5,2);
-    //proteger !
 
     //Testing Key Serialization
     char* chaine = key_to_str (pKey) ;
@@ -112,7 +110,7 @@ int main (void) {
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
-    
+
     printf(" signature to str : %s \n", chaine);
     sgn = str_to_signature(chaine);
     if (!sgn){
@@ -180,6 +178,22 @@ int main (void) {
 		return 1;
 	}
     printf("str to protected : %s %s %s\n", key_to_str(pr->pKey), pr->mess, signature_to_str(pr->sgn));
+
+
+    //Testing generate_random_data
+    if (! generate_random_data(50,10)){
+        free(pKey);
+        free(sKey);
+        free(chaine);
+        free(k);
+        free(pKeyC);
+        free(sKeyC);
+        free(mess);
+        free(sgn);
+        free(pr);
+		printf("Erreur allocation mémoire\n");
+		return 1;
+	}
 
     free(pKey);
     free(sKey);
