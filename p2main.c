@@ -11,7 +11,8 @@ void print_long_vector(long *result, int size){
 }
 
 int main (void) {
-    srand(time (NULL)) ;
+    srand(time(NULL));
+
     //Testing Init Keys
     Key* pKey= malloc (sizeof (Key));
     if (!pKey){
@@ -28,7 +29,7 @@ int main (void) {
     printf("pKey: %lx , %lx \n",pKey->val, pKey->n);
     printf ("sKey : %lx , %lx \n",sKey->val, sKey->n);
 
-    generate_random_data(5,5);
+    generate_random_data(5,2);
     //proteger !
 
     //Testing Key Serialization
@@ -111,6 +112,7 @@ int main (void) {
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
+    
     printf(" signature to str : %s \n", chaine);
     sgn = str_to_signature(chaine);
     if (!sgn){

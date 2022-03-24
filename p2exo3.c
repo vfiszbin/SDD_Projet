@@ -225,33 +225,54 @@ Protected* str_to_protected (char* str){
     }
 
     return pr;
-    
-    
 }
+
+
+/*Libere la memoire et ferme les flux vers les fichiers*/
+void free_generate_random_data(int nv, Citoyen *tab_citoyens, Citoyen *tab_candidats, FILE *f, FILE *f1, FILE *f2){
+    int i = 0;
+    for(i = 0; i < nv ; i++){ //libere les cles de tous les elements precedents dans le tab
+        free(tab_citoyens[i].clepublic);
+        free(tab_citoyens[i].cleprive);
+    }
+    free(tab_citoyens);
+    fclose(f);
+    if (tab_candidats != NULL)
+        free(tab_candidats); //pas besoin de liberer les cles des citoyens, ce sont les memes pointeurs que ceux de tab_citoyens
+    if (f1 != NULL)
+        fclose(f1);
+    if (f2 != NULL)
+        fclose(f2);
+}
+
 //Vérifier si deux fois les memes cles
 int generate_random_data(int nv, int nc){
-    FILE *f ;
+    /*Genere nv citoyens avec une cle publique et secrete aleatoires, ecrit ces cles dans le fichier keys.txt*/
+    FILE *f;
     FILE *f1;
     FILE *f2;
+
     int i=0;
 
-    Electeur* tab_electeurs = (Electeur*) malloc (sizeof(Electeur) * nv);
-	if (!tab_electeurs)
+    Citoyen* tab_citoyens = (Citoyen*) malloc (sizeof(Citoyen) * nv);
+	if (!tab_citoyens)
 		return 0;
 
     f = fopen("keys.txt", "w");
     if (f == NULL){
-        printf("erreur d'ouverture du fichier keys.txt");
+        free(tab_citoyens);
+        printf("Erreur d'ouverture du fichier keys.txt");
+        return 0;
     }
 
     while(i < nv){
 		Key* pKey= malloc (sizeof (Key));
 		if (!pKey){
 			for(int j= 0; j < i; j++){ //libere les cles de tous les elements precedents dans le tab
-				free(tab_electeurs[j].clepublic);
-				free(tab_electeurs[j].cleprive);
+				free(tab_citoyens[j].clepublic);
+				free(tab_citoyens[j].cleprive);
 			}
-			free(tab_electeurs);
+			free(tab_citoyens);
 			fclose(f);
 			printf("Erreur allocation mémoire\n");
 			return 0;
@@ -261,47 +282,38 @@ int generate_random_data(int nv, int nc){
 		if (!sKey){
 			free(pKey);
 			for(int j= 0; j < i; j++){ //libere les cles de tous les elements precedents dans le tab
-				free(tab_electeurs[j].clepublic);
-				free(tab_electeurs[j].cleprive);
+				free(tab_citoyens[j].clepublic);
+				free(tab_citoyens[j].cleprive);
 			}
-			free(tab_electeurs);
+			free(tab_citoyens);
 			fclose(f);
 			printf("Erreur allocation mémoire\n");
 			return 0;
 		}
 		init_pair_keys(pKey,sKey,3,7);
 
-		fprintf(f,"pKey: %lx , %lx , sKey : %lx , %lx  \n",pKey->val, pKey->n, sKey->val, sKey->n);
-		tab_electeurs[i].clepublic = pKey;
-		tab_electeurs[i].cleprive = sKey;
+		fprintf(f, "pKey: %lx , %lx , sKey : %lx , %lx  \n", pKey->val, pKey->n, sKey->val, sKey->n);
+		tab_citoyens[i].clepublic = pKey;
+		tab_citoyens[i].cleprive = sKey;
 		i++;
     }
-
-    for(i = 0; i < nv ; i++){
-        printf("%lx,%lx cle prive \t %lx,%lx cle public \t",tab_electeurs[i].clepublic->val, tab_electeurs[i].clepublic->n, tab_electeurs[i].cleprive->val, tab_electeurs[i].cleprive->n);
-		printf("\n");
-	}
 	
-
-	Electeur* tab_candidats = (Electeur*) malloc(sizeof(Electeur) * nc);
+    /*Selectionne aleatoirement nc candidats parmi les electeurs*/
+	Citoyen* tab_candidats = (Citoyen*) malloc(sizeof(Citoyen) * nc);
 	if (!tab_candidats){
-		for(i = 0; i < nv ; i++){ //libere les cles de tous les elements precedents dans le tab
-			free(tab_electeurs[i].clepublic);
-			free(tab_electeurs[i].cleprive);
-		}
-		free(tab_electeurs);
-		fclose(f);
+        free_generate_random_data(nv, tab_citoyens, NULL, f, NULL, NULL);
 		return 0;
 	}
 
     int random;
-	Electeur candidat_potentiel;
+	Citoyen candidat_potentiel;
 	int candidat_deja_present = 1;
 	for(i = 0; i < nc ; i++){
 		while (candidat_deja_present != 0){
 			candidat_deja_present = 0;
 			random = rand() % nv;
-			candidat_potentiel = tab_electeurs[random];
+			candidat_potentiel = tab_citoyens[random];
+
 			for (int j = 0; j < i; j++){
 				if (tab_candidats[j].clepublic->val == candidat_potentiel.clepublic->val && tab_candidats[j].clepublic->n == candidat_potentiel.clepublic->n
 				&& tab_candidats[j].cleprive->val == candidat_potentiel.cleprive->val && tab_candidats[j].cleprive->n == candidat_potentiel.cleprive->n){
@@ -310,47 +322,74 @@ int generate_random_data(int nv, int nc){
 				}
 			}
 		}
+        candidat_deja_present = 1;
 		//Remalloc des cles separees ?
 		tab_candidats[i].clepublic = candidat_potentiel.clepublic;
 		tab_candidats[i].cleprive = candidat_potentiel.cleprive;
 	}
 
-	
-    f1 = fopen("candidat.txt","w");
+    /*Ecrit les cles publiques des candidats dans le fichier candidat.txt*/
+    f1 = fopen("candidat.txt", "w");
     if (f1==NULL){
-        printf("erreur d'ouverture du fichier candidat.txt");
+        free_generate_random_data(nv, tab_citoyens, tab_candidats, f, NULL, NULL);
+        printf("Erreur d'ouverture du fichier candidat.txt");
+        return 0;
     }
 
-    //while(liste_Cle){
-    //    Liste_key*tmp;
-    //    tmp=liste_Cle->suivant;
-    //    free(liste_Cle);
-    f2 = fopen("candidat.txt","w");
+    for(i = 0; i < nc ; i++){
+		fprintf(f1, "pKey: %lx , %lx\n",tab_candidats[i].clepublic->val, tab_candidats[i].clepublic->n);
+	}
+
+    /*Genere une declaration de vote (pour un candidat aleatoirement choisi) pour chaque citoyen
+    Ecrit la declaration dans declarations.txt*/
+    f2 = fopen("declarations.txt", "w");
     if (f2==NULL){
-        printf("erreur d'ouverture du fichier declaration.txt");
+        free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, NULL);
+        printf("Erreur d'ouverture du fichier declarations.txt");
+        return 0;
     }
-        
-    //}
-    fclose(f);
-    fclose(f1);
-    fclose(f2);
 
-    
-    //f = fopen("key.txt","r");
-    //if (f==NULL){
-    //    printf("erreur d'ouverture du fichier keys.txt");
-    //}
-    //f1 = fopen("candidat.txt","w");
-    //if (f1==NULL){
-    //    printf("erreur d'ouverture du fichier candidat.txt");
-    //}
-    //gets(buffer,256,f);
-    //sscanf(buffer,"Pkey: %lx , %lx",&pKey->val,pKey->n);
-    
+    Protected * pr;
+    Key* pKey;
+    Key* sKey;
+    char* mess;
+    Signature *sgn;
+    for (i = 0; i < nv; i++){
+        pKey = tab_citoyens[i].clepublic;
+        sKey = tab_citoyens[i].cleprive;
+        random = rand() % nc;
+        mess = key_to_str(tab_candidats[random].clepublic); //vote pour une candidat aleatoirement choisi
+        if (!mess){
+            free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
+            return 0;
+        }
+        sgn = sign(mess, sKey);
+        if (!sgn){
+            free(mess);
+            free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
+            return 0;
+        }
+        pr = init_protected(pKey, mess, sgn);
+        if (!pr){
+            free(mess);
+            free(sgn);
+            free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
+            return 0;
+        }
+        fprintf(f2, "%s\n", protected_to_str(pr)); //ecrit la declaration dans le fichier declarations.txt
 
+        //Libere toute memoire allouee a la fin du tour de boucle
+        free(mess);
+        free(sgn);
+        free(pr);
+    }
     
-
+    /*Libere la memoire et ferme les flux vers les fichiers*/
+    free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
+    return 1;
 }
+
+
 
 
 

@@ -22,10 +22,10 @@ typedef struct protected{
     Signature *sgn;
 } Protected;
 
-typedef struct electeur{
+typedef struct citoyen{
     Key *clepublic;
     Key *cleprive;
-}Electeur;
+}Citoyen;
 
 void init_key(Key* key, long val, long n );
 void init_pair_keys(Key* pkey,Key* skey, long low_size, long up_size);
