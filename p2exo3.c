@@ -35,15 +35,15 @@ void init_pair_keys(Key* pkey,Key* skey, long low_size, long up_size){
 
 /*Permet de passer d'une variable de type Key a sa representation sous forme de chaine de caracteres*/
 char* key_to_str (Key* key){
+    if (key == NULL)
+        return NULL;
     long a,b;
     char* u = (char*)malloc (20*sizeof(char));
     if(u==NULL){
         return NULL;
     }
-    if (key){
-        a=key->val;
-        b=key->n;
-    }
+    a=key->val;
+    b=key->n;
     int carac = sprintf(u,"(%lx,%lx)",a,b);
     u[carac]='\0';
     return u;
@@ -92,7 +92,7 @@ char* signature_to_str(Signature* sgn){
     char buffer [156];
     for (int i=0; i<sgn->size; i++){ 
         sprintf(buffer, "%lx", sgn->content[i]); 
-        for (int j=0; j< strlen(buffer); j++){
+        for (size_t j=0; j < strlen(buffer); j++){
             result[pos] = buffer[j];
             pos = pos +1; 
         }
