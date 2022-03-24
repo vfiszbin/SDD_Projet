@@ -245,7 +245,6 @@ void free_generate_random_data(int nv, Citoyen *tab_citoyens, Citoyen *tab_candi
         fclose(f2);
 }
 
-//Vérifier si deux fois les memes cles
 /*Genere nv citoyens chacun avec une cle publique/prive aleatoire, ecrit ces cles dans keys.txt, choisit nc candidats parmi ces citoyens,
 ecrit les cles publiques des candidats dans candidates.txt, genere une declaration de vote pour un candidat aleatoire pour chaque
 citoyen, ecrit les declarations dans declarations.txt*/
