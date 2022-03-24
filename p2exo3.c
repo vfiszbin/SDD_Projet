@@ -246,6 +246,9 @@ void free_generate_random_data(int nv, Citoyen *tab_citoyens, Citoyen *tab_candi
 }
 
 //Vérifier si deux fois les memes cles
+/*Genere nv citoyens chacun avec une cle publique/prive aleatoire, ecrit ces cles dans keys.txt, choisit nc candidats parmi ces citoyens,
+ecrit les cles publiques des candidats dans candidates.txt, genere une declaration de vote pour un candidat aleatoire pour chaque
+citoyen, ecrit les declarations dans declarations.txt*/
 int generate_random_data(int nv, int nc){
     /*Genere nv citoyens avec une cle publique et secrete aleatoires, ecrit ces cles dans le fichier keys.txt*/
     FILE *f;
@@ -264,7 +267,7 @@ int generate_random_data(int nv, int nc){
         printf("Erreur d'ouverture du fichier keys.txt");
         return 0;
     }
-
+    int cle_deja_presente = 1;
     while(i < nv){
 		Key* pKey= malloc (sizeof (Key));
 		if (!pKey){
@@ -290,7 +293,19 @@ int generate_random_data(int nv, int nc){
 			printf("Erreur allocation mémoire\n");
 			return 0;
 		}
-		init_pair_keys(pKey,sKey,3,7);
+        //Empêche que deux citoyens (leurs cles) soient identiques
+        while (cle_deja_presente != 0){
+			cle_deja_presente = 0;
+		    init_pair_keys(pKey,sKey,3,7);
+			for (int j = 0; j < i; j++){
+				if (tab_citoyens[j].clepublic->val == pKey->val && tab_citoyens[j].clepublic->n == pKey->n
+				&& tab_citoyens[j].cleprive->val == sKey->val && tab_citoyens[j].cleprive->n == sKey->n){
+					cle_deja_presente = 1;
+					j = i;
+				}
+			}
+		}
+        cle_deja_presente = 1;
 
 		fprintf(f, "pKey: %lx , %lx , sKey : %lx , %lx  \n", pKey->val, pKey->n, sKey->val, sKey->n);
 		tab_citoyens[i].clepublic = pKey;
@@ -329,10 +344,10 @@ int generate_random_data(int nv, int nc){
 	}
 
     /*Ecrit les cles publiques des candidats dans le fichier candidat.txt*/
-    f1 = fopen("candidat.txt", "w");
+    f1 = fopen("candidates.txt", "w");
     if (f1==NULL){
         free_generate_random_data(nv, tab_citoyens, tab_candidats, f, NULL, NULL);
-        printf("Erreur d'ouverture du fichier candidat.txt");
+        printf("Erreur d'ouverture du fichier candidates.txt");
         return 0;
     }
 
