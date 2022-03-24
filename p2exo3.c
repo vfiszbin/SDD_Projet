@@ -229,3 +229,88 @@ Protected* str_to_protected (char* str){
     
 }
 
+void generate_random_data(int nv,int nc){
+    FILE *f ;
+    FILE *f1;
+    FILE *f2;
+    int i=0;
+    //char buffer[256];
+    //Key* pKey = malloc (sizeof(Key));
+    Liste_key* liste_Cle = malloc (sizeof(Liste_key));
+    liste_Cle->clepublic=NULL;
+    liste_Cle->cleprive=NULL;
+    liste_Cle->suivant=NULL;
+    f = fopen("keys.txt","w");
+    if (f==NULL){
+        printf("erreur d'ouverture du fichier keys.txt");
+    }
+
+    while(i<nv){
+    //Testing Init Keys
+    Key* pKey= malloc (sizeof (Key));
+    if (!pKey){
+		printf("Erreur allocation mémoire\n");
+        exit(1);
+	}
+    Key* sKey= malloc (sizeof (Key));
+    if (!sKey){
+        free(pKey);
+		printf("Erreur allocation mémoire\n");
+		exit(1);
+	}
+    init_pair_keys(pKey,sKey,3,7);
+    fprintf(f,"pKey: %lx , %lx , sKey : %lx , %lx  \n",pKey->val, pKey->n,sKey->val, sKey->n);
+    Liste_key* tmp = malloc (sizeof(Liste_key));
+    tmp->clepublic=pKey;
+    tmp->cleprive=sKey;
+    tmp->suivant=liste_Cle;
+    liste_Cle=tmp;
+    i++;
+    
+    }
+    while (liste_Cle->clepublic != NULL){
+        printf("%lx,%lx cle prive \n %lx,%lx cle public \n",liste_Cle->clepublic->val,liste_Cle->clepublic->n,liste_Cle->cleprive->val,liste_Cle->cleprive->n);
+        liste_Cle=liste_Cle->suivant;
+    }
+    int random;
+    f1 = fopen("candidat.txt","w");
+    if (f1==NULL){
+        printf("erreur d'ouverture du fichier candidat.txt");
+    }
+
+    //while(liste_Cle){
+    //    Liste_key*tmp;
+    //    tmp=liste_Cle->suivant;
+    //    free(liste_Cle);
+    f2 = fopen("candidat.txt","w");
+    if (f2==NULL){
+        printf("erreur d'ouverture du fichier declaration.txt");
+    }
+        
+    //}
+    fclose(f);
+    fclose(f1);
+    fclose(f2);
+
+    
+    //f = fopen("key.txt","r");
+    //if (f==NULL){
+    //    printf("erreur d'ouverture du fichier keys.txt");
+    //}
+    //f1 = fopen("candidat.txt","w");
+    //if (f1==NULL){
+    //    printf("erreur d'ouverture du fichier candidat.txt");
+    //}
+    //gets(buffer,256,f);
+    //sscanf(buffer,"Pkey: %lx , %lx",&pKey->val,pKey->n);
+    
+
+    
+
+}
+
+
+
+
+
+
