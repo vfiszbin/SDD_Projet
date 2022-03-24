@@ -27,7 +27,10 @@ int main (void) {
     init_pair_keys(pKey,sKey,3,7);
     printf("pKey: %lx , %lx \n",pKey->val, pKey->n);
     printf ("sKey : %lx , %lx \n",sKey->val, sKey->n);
+
     generate_random_data(5,5);
+    //proteger !
+
     //Testing Key Serialization
     char* chaine = key_to_str (pKey) ;
     if (!chaine){

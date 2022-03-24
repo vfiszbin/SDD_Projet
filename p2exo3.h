@@ -22,11 +22,10 @@ typedef struct protected{
     Signature *sgn;
 } Protected;
 
-typedef struct liste_key{
+typedef struct electeur{
     Key *clepublic;
     Key *cleprive;
-    struct liste_key *suivant;
-}Liste_key;
+}Electeur;
 
 void init_key(Key* key, long val, long n );
 void init_pair_keys(Key* pkey,Key* skey, long low_size, long up_size);
@@ -40,6 +39,6 @@ Protected* init_protected(Key* pKey, char* mess, Signature* sgn);
 int verify(Protected* pr);
 char* protected_to_str (Protected* pr);
 Protected* str_to_protected (char* str);
-void generate_random_data(int nv,int nc);
+int generate_random_data(int nv,int nc);
 
 #endif
