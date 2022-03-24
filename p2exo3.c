@@ -228,4 +228,132 @@ Protected* str_to_protected (char* str){
     
     
 }
+//Vérifier si deux fois les memes cles
+int generate_random_data(int nv, int nc){
+    FILE *f ;
+    FILE *f1;
+    FILE *f2;
+    int i=0;
+
+    Electeur* tab_electeurs = (Electeur*) malloc (sizeof(Electeur) * nv);
+	if (!tab_electeurs)
+		return 0;
+
+    f = fopen("keys.txt", "w");
+    if (f == NULL){
+        printf("erreur d'ouverture du fichier keys.txt");
+    }
+
+    while(i < nv){
+		Key* pKey= malloc (sizeof (Key));
+		if (!pKey){
+			for(int j= 0; j < i; j++){ //libere les cles de tous les elements precedents dans le tab
+				free(tab_electeurs[j].clepublic);
+				free(tab_electeurs[j].cleprive);
+			}
+			free(tab_electeurs);
+			fclose(f);
+			printf("Erreur allocation mémoire\n");
+			return 0;
+		}
+
+		Key* sKey= malloc (sizeof (Key));
+		if (!sKey){
+			free(pKey);
+			for(int j= 0; j < i; j++){ //libere les cles de tous les elements precedents dans le tab
+				free(tab_electeurs[j].clepublic);
+				free(tab_electeurs[j].cleprive);
+			}
+			free(tab_electeurs);
+			fclose(f);
+			printf("Erreur allocation mémoire\n");
+			return 0;
+		}
+		init_pair_keys(pKey,sKey,3,7);
+
+		fprintf(f,"pKey: %lx , %lx , sKey : %lx , %lx  \n",pKey->val, pKey->n, sKey->val, sKey->n);
+		tab_electeurs[i].clepublic = pKey;
+		tab_electeurs[i].cleprive = sKey;
+		i++;
+    }
+
+    for(i = 0; i < nv ; i++){
+        printf("%lx,%lx cle prive \t %lx,%lx cle public \t",tab_electeurs[i].clepublic->val, tab_electeurs[i].clepublic->n, tab_electeurs[i].cleprive->val, tab_electeurs[i].cleprive->n);
+		printf("\n");
+	}
+	
+
+	Electeur* tab_candidats = (Electeur*) malloc(sizeof(Electeur) * nc);
+	if (!tab_candidats){
+		for(i = 0; i < nv ; i++){ //libere les cles de tous les elements precedents dans le tab
+			free(tab_electeurs[i].clepublic);
+			free(tab_electeurs[i].cleprive);
+		}
+		free(tab_electeurs);
+		fclose(f);
+		return 0;
+	}
+
+    int random;
+	Electeur candidat_potentiel;
+	int candidat_deja_present = 1;
+	for(i = 0; i < nc ; i++){
+		while (candidat_deja_present != 0){
+			candidat_deja_present = 0;
+			random = rand() % nv;
+			candidat_potentiel = tab_electeurs[random];
+			for (int j = 0; j < i; j++){
+				if (tab_candidats[j].clepublic->val == candidat_potentiel.clepublic->val && tab_candidats[j].clepublic->n == candidat_potentiel.clepublic->n
+				&& tab_candidats[j].cleprive->val == candidat_potentiel.cleprive->val && tab_candidats[j].cleprive->n == candidat_potentiel.cleprive->n){
+					candidat_deja_present = 1;
+					j = i;
+				}
+			}
+		}
+		//Remalloc des cles separees ?
+		tab_candidats[i].clepublic = candidat_potentiel.clepublic;
+		tab_candidats[i].cleprive = candidat_potentiel.cleprive;
+	}
+
+	
+    f1 = fopen("candidat.txt","w");
+    if (f1==NULL){
+        printf("erreur d'ouverture du fichier candidat.txt");
+    }
+
+    //while(liste_Cle){
+    //    Liste_key*tmp;
+    //    tmp=liste_Cle->suivant;
+    //    free(liste_Cle);
+    f2 = fopen("candidat.txt","w");
+    if (f2==NULL){
+        printf("erreur d'ouverture du fichier declaration.txt");
+    }
+        
+    //}
+    fclose(f);
+    fclose(f1);
+    fclose(f2);
+
+    
+    //f = fopen("key.txt","r");
+    //if (f==NULL){
+    //    printf("erreur d'ouverture du fichier keys.txt");
+    //}
+    //f1 = fopen("candidat.txt","w");
+    //if (f1==NULL){
+    //    printf("erreur d'ouverture du fichier candidat.txt");
+    //}
+    //gets(buffer,256,f);
+    //sscanf(buffer,"Pkey: %lx , %lx",&pKey->val,pKey->n);
+    
+
+    
+
+}
+
+
+
+
+
 
