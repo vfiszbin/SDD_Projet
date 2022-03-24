@@ -3,3 +3,5 @@ a.out
 a.out.dSYM
 .vscode
 *.ps
+*.o
+p?main
