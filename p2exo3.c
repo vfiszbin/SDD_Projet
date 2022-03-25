@@ -148,8 +148,10 @@ int verify(Protected* pr){
     char *decrypted_mess = decrypt(pr->sgn->content, pr->sgn->size, pr->pKey->val, pr->pKey->n);
     if (!decrypted_mess)
         return -1;
-
-    return strcmp(decrypted_mess, pr->mess) == 0;
+    
+    int cmp = strcmp(decrypted_mess, pr->mess); //compare le message decrypte et le message contenu dans pr
+    free(decrypted_mess);
+    return cmp == 0;
 }
 
 /*Permet de passer d'un Protected a sa representation sous forme de chaine de caracteres*/
