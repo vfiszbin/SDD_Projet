@@ -190,6 +190,9 @@ int main (void) {
         free(sKeyC);
         free(mess);
         free(sgn);
+        free(pr->pKey);
+        free(pr->mess);
+        free(pr->sgn);
         free(pr);
 		printf("Erreur allocation mémoire\n");
 		return 1;
@@ -203,6 +206,9 @@ int main (void) {
     free(sKeyC);
     free(mess);
     free(sgn);
+    free(pr->pKey);
+    free(pr->mess);
+    free(pr->sgn);
     free(pr);
 
     return 0;
