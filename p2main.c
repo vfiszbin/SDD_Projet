@@ -71,6 +71,7 @@ int main (void) {
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
+
     //Declaration:
     char* mess = key_to_str(pKeyC);
     if (!mess){
@@ -83,7 +84,22 @@ int main (void) {
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
-    printf("%s vote pour %s\n",key_to_str(pKey), mess); 
+
+    char *key_str = key_to_str(pKey);
+    if (!key_str){
+        free(pKey);
+        free(sKey);
+        free(chaine);
+        free(k);
+        free(pKeyC);
+        free(sKeyC);
+        free(mess);
+		printf("Erreur allocation mémoire\n");
+		return 1;
+	}
+    printf("%s vote pour %s\n", key_str, mess);
+    free(key_str);
+
     Signature* sgn = sign(mess, sKey);
     if (!sgn){
         free(pKey);
@@ -107,12 +123,15 @@ int main (void) {
         free(pKeyC);
         free(sKeyC);
         free(mess);
+        free(sgn->content);
         free(sgn);
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
 
     printf(" signature to str : %s \n", chaine);
+    free(sgn->content);
+    free(sgn);
     sgn = str_to_signature(chaine);
     if (!sgn){
         free(pKey);
@@ -122,7 +141,6 @@ int main (void) {
         free(pKeyC);
         free(sKeyC);
         free(mess);
-        free(sgn);
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
@@ -138,6 +156,7 @@ int main (void) {
         free(pKeyC);
         free(sKeyC);
         free(mess);
+        free(sgn->content);
         free(sgn);
 		printf("Erreur allocation mémoire\n");
 		return 1;
@@ -148,6 +167,8 @@ int main (void) {
     }else{
         printf("Signature non valide\n");
     }
+    
+    free(chaine);
     chaine = protected_to_str(pr);
     if (!chaine){
         free(pKey);
@@ -157,6 +178,7 @@ int main (void) {
         free(pKeyC);
         free(sKeyC);
         free(mess);
+        free(sgn->content);
         free(sgn);
         free(pr);
 		printf("Erreur allocation mémoire\n");
@@ -173,13 +195,53 @@ int main (void) {
         free(pKeyC);
         free(sKeyC);
         free(mess);
+        free(sgn->content);
         free(sgn);
+		printf("Erreur allocation mémoire\n");
+		return 1;
+	}
+    key_str = key_to_str(pr->pKey);
+    if (!key_str){
+        free(pKey);
+        free(sKey);
+        free(chaine);
+        free(k);
+        free(pKeyC);
+        free(sKeyC);
+        free(mess);
+        free(sgn->content);
+        free(sgn);
+        free(pr->pKey);
+        free(pr->mess);
+        free(pr->sgn->content);
+        free(pr->sgn);
         free(pr);
 		printf("Erreur allocation mémoire\n");
 		return 1;
 	}
-    printf("str to protected : %s %s %s\n", key_to_str(pr->pKey), pr->mess, signature_to_str(pr->sgn));
-
+    char *sgn_str = signature_to_str(pr->sgn);
+    if (!sgn_str){
+        free(pKey);
+        free(sKey);
+        free(chaine);
+        free(k);
+        free(pKeyC);
+        free(sKeyC);
+        free(mess);
+        free(sgn->content);
+        free(sgn);
+        free(pr->pKey);
+        free(pr->mess);
+        free(pr->sgn->content);
+        free(pr->sgn);
+        free(pr);
+        free(key_str);
+		printf("Erreur allocation mémoire\n");
+		return 1;
+	}
+    printf("str to protected : %s %s %s\n", key_str, pr->mess, sgn_str);
+    free(key_str);
+    free(sgn_str);
 
     //Testing generate_random_data
     if (! generate_random_data(50,10)){
@@ -190,9 +252,11 @@ int main (void) {
         free(pKeyC);
         free(sKeyC);
         free(mess);
+        free(sgn->content);
         free(sgn);
         free(pr->pKey);
         free(pr->mess);
+        free(pr->sgn->content);
         free(pr->sgn);
         free(pr);
 		printf("Erreur allocation mémoire\n");
@@ -206,9 +270,11 @@ int main (void) {
     free(pKeyC);
     free(sKeyC);
     free(mess);
+    free(sgn->content);
     free(sgn);
     free(pr->pKey);
     free(pr->mess);
+    free(pr->sgn->content);
     free(pr->sgn);
     free(pr);
 

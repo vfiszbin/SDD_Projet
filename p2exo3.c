@@ -193,6 +193,8 @@ char* protected_to_str (Protected* pr){
     }
     result[i] = '\0';
 
+    free(pKey);
+    free(sgn);
     return result;
 }
 
@@ -388,14 +390,26 @@ int generate_random_data(int nv, int nc){
         pr = init_protected(pKey, mess, sgn);
         if (!pr){
             free(mess);
+            free(sgn->content);
             free(sgn);
             free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
             return 0;
         }
-        fprintf(f2, "%s\n", protected_to_str(pr)); //ecrit la declaration dans le fichier declarations.txt
+        char *pr_str = protected_to_str(pr);
+        if (!pr_str){
+            free(mess);
+            free(sgn->content);
+            free(sgn);
+            free(pr);
+            free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
+            return 0;
+        }
+        fprintf(f2, "%s\n", pr_str); //ecrit la declaration dans le fichier declarations.txt
 
         //Libere toute memoire allouee a la fin du tour de boucle
+        free(pr_str);
         free(mess);
+        free(sgn->content);
         free(sgn);
         free(pr);
     }
