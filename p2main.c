@@ -97,6 +97,7 @@ int main (void) {
 		return 1;
 	}
     printf("signature : "); print_long_vector(sgn->content, sgn->size);
+    free(chaine);
     chaine = signature_to_str(sgn);
     if (!chaine){
         free(pKey);
