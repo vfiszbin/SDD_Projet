@@ -5,3 +5,6 @@ a.out.dSYM
 *.ps
 *.o
 p?main
+candidates.txt
+declarations.txt
+keys.txt
