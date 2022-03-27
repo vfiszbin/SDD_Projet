@@ -1,6 +1,7 @@
 #include "p1exo1.h"
 #include "p1exo2.h"
 #include "p2exo3.h"
+#include "p2exo4.h"
 
 void print_long_vector(long *result, int size){
 	printf("Vector: [");
