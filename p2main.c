@@ -10,6 +10,41 @@ void print_long_vector(long *result, int size){
 	printf("]\n");
 }
 
+int free_p2main(Key *pKey, Key *sKey, char *chaine, Key *k, Key *pKeyC, Key *sKeyC, char *mess, long *sgn_content, Signature *sgn,
+Key *pr_pKey, char *pr_mess, long *pr_sgn_content, Signature *pr_sgn, Protected *pr, char *key_str){
+    if (pKey)
+        free(pKey);
+    if (sKey)
+        free(sKey);
+    if (chaine)
+        free(chaine);
+    if (k)
+        free(k);
+    if (pKeyC)
+        free(pKeyC);
+    if (sKeyC)
+        free(sKeyC);
+    if (mess)
+        free(mess);
+    if (sgn_content)
+        free(sgn_content);
+    if (sgn)
+        free(sgn);
+    if (pr_pKey)
+        free(pr_pKey);
+    if (pr_mess)
+        free(pr_mess);
+    if (pr_sgn_content)
+        free(pr_sgn_content);
+    if (pr_sgn)
+        free(pr_sgn);
+    if (pr)
+        free(pr);
+    if (key_str)
+        free(key_str);
+    return 1;
+}
+
 int main (void) {
     srand(time(NULL));
 
@@ -21,9 +56,8 @@ int main (void) {
 	}
     Key* sKey= malloc (sizeof (Key));
     if (!sKey){
-        free(pKey);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     init_pair_keys(pKey,sKey,3,7);
     printf("pKey: %lx , %lx \n",pKey->val, pKey->n);
@@ -33,10 +67,8 @@ int main (void) {
     //Testing Key Serialization
     char* chaine = key_to_str (pKey) ;
     if (!chaine){
-        free(pKey);
-        free(sKey);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     printf("key_to_str:%s\n",chaine);
     Key* k = str_to_key(chaine);
@@ -45,7 +77,7 @@ int main (void) {
         free(sKey);
         free(chaine);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     printf("str_to_key : %lx , %lx\n",k->val,k->n);
 
@@ -54,92 +86,58 @@ int main (void) {
     //Candidate keys:
     Key* pKeyC = malloc(sizeof(Key));
     if (!pKeyC){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     Key* sKeyC = malloc(sizeof(Key)); init_pair_keys(pKeyC, sKeyC, 3, 7);
     if (!sKey){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
+
     //Declaration:
     char* mess = key_to_str(pKeyC);
     if (!mess){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
-    printf("%s vote pour %s\n",key_to_str(pKey), mess); 
+
+    char *key_str = key_to_str(pKey);
+    if (!key_str){
+		printf("Erreur allocation mémoire\n");
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	}
+    printf("%s vote pour %s\n", key_str, mess);
+    free(key_str);
+
     Signature* sgn = sign(mess, sKey);
     if (!sgn){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     printf("signature : "); print_long_vector(sgn->content, sgn->size);
+    free(chaine);
     chaine = signature_to_str(sgn);
     if (!chaine){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
-        free(sgn);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, NULL, k, pKeyC, sKeyC, mess, sgn->content, sgn, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
 
     printf(" signature to str : %s \n", chaine);
+    free(sgn->content);
+    free(sgn);
     sgn = str_to_signature(chaine);
     if (!sgn){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
-        free(sgn);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     printf("str to signature : "); print_long_vector(sgn->content,sgn->size);
 
     //Testing protected:
     Protected* pr = init_protected(pKey, mess, sgn);
     if (!pr){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
-        free(sgn);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
     //Verification:
     if (verify(pr)){ 
@@ -147,63 +145,42 @@ int main (void) {
     }else{
         printf("Signature non valide\n");
     }
+    
+    free(chaine);
     chaine = protected_to_str(pr);
     if (!chaine){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
-        free(sgn);
-        free(pr);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, NULL, k, pKeyC, sKeyC, mess, sgn->content, sgn, NULL, NULL, NULL, NULL, pr, NULL);
 	}
     printf(" protected to str : %s\n", chaine);
     free(pr);
     pr = str_to_protected(chaine);
     if (!pr){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
-        free(sgn);
-        free(pr);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, NULL, NULL, NULL, NULL, NULL, NULL);
 	}
-    printf("str to protected : %s %s %s\n", key_to_str(pr->pKey), pr->mess, signature_to_str(pr->sgn));
-
+    key_str = key_to_str(pr->pKey);
+    if (!key_str){
+		printf("Erreur allocation mémoire\n");
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, pr->pKey, pr->mess, pr->sgn->content, pr->sgn, pr, NULL);
+	}
+    char *sgn_str = signature_to_str(pr->sgn);
+    if (!sgn_str){
+		printf("Erreur allocation mémoire\n");
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, pr->pKey, pr->mess, pr->sgn->content, pr->sgn, pr, key_str);
+	}
+    printf("str to protected : %s %s %s\n", key_str, pr->mess, sgn_str);
+    free(key_str);
+    free(sgn_str);
 
     //Testing generate_random_data
     if (! generate_random_data(50,10)){
-        free(pKey);
-        free(sKey);
-        free(chaine);
-        free(k);
-        free(pKeyC);
-        free(sKeyC);
-        free(mess);
-        free(sgn);
-        free(pr);
 		printf("Erreur allocation mémoire\n");
-		return 1;
+		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, pr->pKey, pr->mess, pr->sgn->content, pr->sgn, pr, NULL);
 	}
 
-    free(pKey);
-    free(sKey);
-    free(chaine);
-    free(k);
-    free(pKeyC);
-    free(sKeyC);
-    free(mess);
-    free(sgn);
-    free(pr);
+    free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, pr->pKey, pr->mess, pr->sgn->content, pr->sgn, pr, NULL);
 
     return 0;
 }
+
