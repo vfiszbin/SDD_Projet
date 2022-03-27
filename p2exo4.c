@@ -79,7 +79,7 @@ int generate_random_data(int nv, int nc){
 		}
         cle_deja_presente = 1;
 
-		fprintf(f, "pKey: %lx , %lx , sKey : %lx , %lx  \n", pKey->val, pKey->n, sKey->val, sKey->n);
+		fprintf(f, "pKey: (%lx,%lx), sKey: (%lx,%lx)\n", pKey->val, pKey->n, sKey->val, sKey->n);
 		tab_citoyens[i].clepublic = pKey;
 		tab_citoyens[i].cleprive = sKey;
 		i++;
@@ -124,7 +124,7 @@ int generate_random_data(int nv, int nc){
     }
 
     for(i = 0; i < nc ; i++){
-		fprintf(f1, "pKey: %lx , %lx\n",tab_candidats[i].clepublic->val, tab_candidats[i].clepublic->n);
+		fprintf(f1, "pKey: (%lx,%lx)\n",tab_candidats[i].clepublic->val, tab_candidats[i].clepublic->n);
 	}
 
     /*Genere une declaration de vote (pour un candidat aleatoirement choisi) pour chaque citoyen
