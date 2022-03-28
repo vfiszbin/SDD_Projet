@@ -163,6 +163,7 @@ void affichage_list_cell_protected(CellProtected* pr){
 	while(pr){
 		printf("%s",protected_to_str(pr->data));
 		pr=pr->next;
+		printf("\n");
 	}
 }
 

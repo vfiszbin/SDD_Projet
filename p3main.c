@@ -9,7 +9,7 @@ int main(){
 
 	delete_list_keys(lck);
 
-
+    printf("\n");
 
 	CellProtected *lcp = read_protect("declarations.txt");
 	if (!lcp){
