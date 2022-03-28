@@ -167,5 +167,19 @@ void affichage_list_cell_protected(CellProtected* pr){
 	}
 }
 
+void imposteur(CellProtected* lcp){
+	CellProtected* tmp;
+	while(lcp){
+		if(verify(lcp->data)==1){
+			lcp=lcp->next;
+			}
+			else{
+			tmp=lcp->next;
+			delete_cell_protected(lcp);
+			lcp=tmp;
+		}
+	}
+}
+
 
 

@@ -24,4 +24,6 @@ void delete_list_cell(CellProtected* lcp);
 CellProtected* read_protect(char *filename);
 void affichage_list_cell_protected(CellProtected* pr);
 
+void imposteur(CellProtected* lcp);
+
 #endif
