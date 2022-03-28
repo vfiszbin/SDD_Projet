@@ -8,5 +8,14 @@ int main(){
 	print_list_keys(lck);
 
 	delete_list_keys(lck);
+
+
+
+	CellProtected *lcp = read_protect("declarations.txt");
+	if (!lcp){
+		return 1;
+	}
+	affichage_list_cell_protected(lcp);
+	delete_list_cell(lcp);
 	return 0;
 }

@@ -91,3 +91,80 @@ CellKey* read_public_keys(char *filename){
 	return lck;
 
 }
+
+CellProtected* create_cell_protected (Protected* pr){
+	CellProtected* c = (CellProtected*) malloc (sizeof(CellProtected));
+	if (c==NULL){
+		return NULL;
+	}
+	c->data=pr;
+	c->next=NULL;
+	return c;
+}
+
+void ajouter_en_tete(CellProtected** lcp,CellProtected* c){
+	c->next = *lcp;
+	*lcp = c;
+
+}
+void delete_cell_protected(CellProtected* pr){
+	free(pr->data);
+	free(pr);
+}
+
+void delete_list_cell(CellProtected* lcp){
+	CellProtected* tmp;
+	while (lcp){
+		tmp = lcp;
+		lcp = lcp->next;
+		delete_cell_protected(tmp);
+	}
+	
+}
+
+CellProtected* read_protect(char *filename){
+	FILE *f = fopen(filename, "r");
+	if (f==NULL){
+		printf("marche pas");
+		return NULL;
+	}
+	Protected* pr;
+	CellProtected* c;
+	CellProtected* lcp = NULL;
+	char buffer[BUFFLEN];
+
+
+	while(fgets(buffer, BUFFLEN, f)){
+		pr = str_to_protected(buffer);
+		if (!pr){
+			delete_list_cell(lcp);
+			fclose(f);
+			return NULL;
+		}
+	c = create_cell_protected(pr);
+		if (!c){
+			free(pr);
+			delete_list_cell(lcp);
+			fclose(f);
+			return NULL;
+		}
+		ajouter_en_tete(&lcp,c);
+	}
+	if (feof(f) == 0){ //si fgets s'est arretee de lire avant la fin de fichier
+		delete_list_cell(lcp);
+		fclose(f);
+		
+		return NULL;
+	}
+	
+	return lcp;
+}
+void affichage_list_cell_protected(CellProtected* pr){
+	while(pr){
+		printf("%s",protected_to_str(pr->data));
+		pr=pr->next;
+	}
+}
+
+
+
