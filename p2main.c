@@ -175,7 +175,7 @@ int main (void) {
     free(sgn_str);
 
     //Testing generate_random_data
-    if (! generate_random_data(50,10)){
+    if (! generate_random_data(10,3)){
 		printf("Erreur allocation mémoire\n");
 		return free_p2main(pKey, sKey, chaine, k, pKeyC, sKeyC, mess, sgn->content, sgn, pr->pKey, pr->mess, pr->sgn->content, pr->sgn, pr, NULL);
 	}
