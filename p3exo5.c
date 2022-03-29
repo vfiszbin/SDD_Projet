@@ -2,7 +2,7 @@
 
 #define BUFFLEN 1024
 
-/*Alloue et initialise une cellule de liste chainee*/
+/*Alloue et initialise une cellule de liste chainee de type CellKey*/
 CellKey* create_cell_key(Key* key){
 	CellKey *c = (CellKey *) malloc(sizeof(CellKey));
 	if (!c)
@@ -18,7 +18,7 @@ void add_cellKey_to_front(CellKey **lck, CellKey *c){
 	*lck = c;
 }
 
-/*Supprime une cellule de liste chainee de cles*/
+/*Libere une cellule de liste chainee de cles*/
 void delete_cell_key(CellKey *c){
 	free(c->data);
 	free(c);
@@ -95,6 +95,7 @@ CellKey* read_public_keys(char *filename){
 
 }
 
+/*Alloue et initialise une cellule de liste chainee de type CellProtected*/
 CellProtected* create_cell_protected (Protected* pr){
 	CellProtected* c = (CellProtected*) malloc (sizeof(CellProtected));
 	if (c==NULL){
@@ -105,11 +106,14 @@ CellProtected* create_cell_protected (Protected* pr){
 	return c;
 }
 
+/*Ajoute une déclaration signee en tete de liste*/
 void add_cellProtected_to_front(CellProtected** lcp, CellProtected* c){
 	c->next = *lcp;
 	*lcp = c;
 
 }
+
+/*Libere une cellule de liste chainee de declarations signees*/
 void delete_cell_protected(CellProtected* c){
 	free(c->data->mess);
 	free(c->data->pKey);
@@ -119,6 +123,7 @@ void delete_cell_protected(CellProtected* c){
 	free(c);
 }
 
+/*Libere une liste chainee de declarations signees*/
 void delete_list_cell(CellProtected* lcp){
 	CellProtected* tmp;
 	while (lcp){
@@ -129,6 +134,8 @@ void delete_list_cell(CellProtected* lcp){
 	
 }
 
+/*Prend en entree le fichier declarations.txt, et retourne une liste chainee 
+contenant toutes les declarations signees du fichier*/
 CellProtected* read_protected(char *filename){
 	FILE *f = fopen(filename, "r");
 	if (f==NULL){
@@ -178,6 +185,7 @@ void print_list_cell_protected(CellProtected* lcp){
 	}
 }
 
+/*Supprime toutes les declarations signees dont la signature n'est pas valide dans la liste chainee lcp*/
 void supprime_declarations_non_valides(CellProtected **lcp){
 	CellProtected *c = *lcp;
 	CellProtected *tmp;
