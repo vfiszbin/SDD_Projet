@@ -72,7 +72,7 @@ void plus_grand_premier_is_prime_naive_en_temps_donne(long p, double s){
 
 /*Teste si a est un temoin de Miller pour p, pour un entier a donne*/
 int witness (long a, long b, long d, long p){
-    long x = modpow_naive(a, d, p);
+    long x = modpow(a, d, p);
     if (x == 1){
         return 0;
     }
@@ -80,7 +80,7 @@ int witness (long a, long b, long d, long p){
         if(x == p-1){
             return 0; 
         }
-        x = modpow_naive(x,2,p); 
+        x = modpow(x,2,p); 
     }
     return 1; 
 }
@@ -140,7 +140,7 @@ long random_prime_number(int low_size, int up_size, int k){
     return p;
 }
 
-
+/*Main de test des fonctions de l'exercice 1*/
 // int main(){
 //     srand(time(NULL));
 
