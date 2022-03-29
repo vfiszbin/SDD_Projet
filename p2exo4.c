@@ -65,11 +65,12 @@ int generate_random_data(int nv, int nc){
 			printf("Erreur allocation mémoire\n");
 			return 0;
 		}
-        //Empêche que deux citoyens (leurs cles) soient identiques
+        //Empeche que deux citoyens (leurs cles) soient identiques
         while (cle_deja_presente != 0){
 			cle_deja_presente = 0;
 		    init_pair_keys(pKey,sKey,3,7);
 			for (int j = 0; j < i; j++){
+				//Verifie que les cles ne sont pas deja presentes dans le tableau de citoyens
 				if (tab_citoyens[j].clepublic->val == pKey->val && tab_citoyens[j].clepublic->n == pKey->n
 				&& tab_citoyens[j].cleprive->val == sKey->val && tab_citoyens[j].cleprive->n == sKey->n){
 					cle_deja_presente = 1;
@@ -96,12 +97,13 @@ int generate_random_data(int nv, int nc){
 	Citoyen candidat_potentiel;
 	int candidat_deja_present = 1;
 	for(i = 0; i < nc ; i++){
-		while (candidat_deja_present != 0){
+		while (candidat_deja_present != 0){ //tire un citoyen aleatoirement jusqu'a ce qu'il ne soit pas deja candidat
 			candidat_deja_present = 0;
 			random = rand() % nv;
 			candidat_potentiel = tab_citoyens[random];
 
 			for (int j = 0; j < i; j++){
+				//Verifie que ce candidat n'existe pas deja dans le tableau de candidats
 				if (tab_candidats[j].clepublic->val == candidat_potentiel.clepublic->val && tab_candidats[j].clepublic->n == candidat_potentiel.clepublic->n
 				&& tab_candidats[j].cleprive->val == candidat_potentiel.cleprive->val && tab_candidats[j].cleprive->n == candidat_potentiel.cleprive->n){
 					candidat_deja_present = 1;
@@ -110,7 +112,7 @@ int generate_random_data(int nv, int nc){
 			}
 		}
         candidat_deja_present = 1;
-		//Remalloc des cles separees ?
+
 		tab_candidats[i].clepublic = candidat_potentiel.clepublic;
 		tab_candidats[i].cleprive = candidat_potentiel.cleprive;
 	}

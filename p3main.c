@@ -11,11 +11,12 @@ int main(){
 
     printf("\n");
 
-	CellProtected *lcp = read_protect("declarations.txt");
+	//Test de read_protect
+	CellProtected *lcp = read_protected("declarations.txt");
 	if (!lcp){
 		return 1;
 	}
-	affichage_list_cell_protected(lcp);
+	print_list_cell_protected(lcp);
 	delete_list_cell(lcp);
 	return 0;
 }

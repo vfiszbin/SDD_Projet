@@ -13,7 +13,7 @@ CellKey* create_cell_key(Key* key){
 }
 
 /*Ajoute une cle en tete de liste*/
-void add_cell_key_head_of_list(CellKey **lck, CellKey *c){
+void add_cellKey_to_front(CellKey **lck, CellKey *c){
 	c->next = *lck;
 	*lck = c;
 }
@@ -47,8 +47,11 @@ void print_list_keys(CellKey *lck){
 et retourne une liste chainee contenant toutes les cles publiques du fichier*/
 CellKey* read_public_keys(char *filename){
 	FILE *f = fopen(filename, "r");
-	if (!f)
+	if (!f){
+		printf("Erreur d'ouverture de %s\n", filename);
 		return NULL;
+	}
+		
 
 	char buffer[BUFFLEN];
 	char key_str[BUFFLEN];
@@ -80,7 +83,7 @@ CellKey* read_public_keys(char *filename){
 			fclose(f);
 			return NULL;
 		}
-		add_cell_key_head_of_list(&lck, c);
+		add_cellKey_to_front(&lck, c);
 	}
 	if (feof(f) == 0){ //si fgets s'est arretee de lire avant la fin de fichier
 		delete_list_keys(lck);
@@ -102,14 +105,14 @@ CellProtected* create_cell_protected (Protected* pr){
 	return c;
 }
 
-void ajouter_en_tete(CellProtected** lcp,CellProtected* c){
+void add_cellProtected_to_front(CellProtected** lcp, CellProtected* c){
 	c->next = *lcp;
 	*lcp = c;
 
 }
-void delete_cell_protected(CellProtected* pr){
-	free(pr->data);
-	free(pr);
+void delete_cell_protected(CellProtected* c){
+	free(c->data);
+	free(c);
 }
 
 void delete_list_cell(CellProtected* lcp){
@@ -122,10 +125,10 @@ void delete_list_cell(CellProtected* lcp){
 	
 }
 
-CellProtected* read_protect(char *filename){
+CellProtected* read_protected(char *filename){
 	FILE *f = fopen(filename, "r");
 	if (f==NULL){
-		printf("marche pas");
+		printf("Erreur d'ouverture de %s\n", filename);
 		return NULL;
 	}
 	Protected* pr;
@@ -148,26 +151,25 @@ CellProtected* read_protect(char *filename){
 			fclose(f);
 			return NULL;
 		}
-		ajouter_en_tete(&lcp,c);
+		add_cellProtected_to_front(&lcp, c);
 	}
 	if (feof(f) == 0){ //si fgets s'est arretee de lire avant la fin de fichier
 		delete_list_cell(lcp);
 		fclose(f);
-		
 		return NULL;
 	}
 	
 	return lcp;
 }
-void affichage_list_cell_protected(CellProtected* pr){
-	while(pr){
-		printf("%s",protected_to_str(pr->data));
-		pr=pr->next;
-		printf("\n");
+
+void print_list_cell_protected(CellProtected* lcp){
+	while(lcp){
+		printf("%s\n", protected_to_str(lcp->data));
+		lcp = lcp->next;
 	}
 }
 
-void imposteur(CellProtected* lcp){
+void supprime_declarations_non_valides(CellProtected* lcp){
 	CellProtected* tmp;
 	while(lcp){
 		if(verify(lcp->data)==1){
