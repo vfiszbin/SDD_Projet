@@ -90,7 +90,7 @@ CellKey* read_public_keys(char *filename){
 		fclose(f);
 		return NULL;
 	}
-	
+	fclose(f);
 	return lck;
 
 }
@@ -111,6 +111,10 @@ void add_cellProtected_to_front(CellProtected** lcp, CellProtected* c){
 
 }
 void delete_cell_protected(CellProtected* c){
+	free(c->data->mess);
+	free(c->data->pKey);
+	free(c->data->sgn->content);
+	free(c->data->sgn);
 	free(c->data);
 	free(c);
 }
@@ -158,14 +162,19 @@ CellProtected* read_protected(char *filename){
 		fclose(f);
 		return NULL;
 	}
-	
+	fclose(f);
 	return lcp;
 }
 
 void print_list_cell_protected(CellProtected* lcp){
+	char *str_pr;
 	while(lcp){
-		printf("%s\n", protected_to_str(lcp->data));
+		str_pr = protected_to_str(lcp->data);
+		if (!str_pr)
+			return;
+		printf("%s\n", str_pr);
 		lcp = lcp->next;
+		free(str_pr);
 	}
 }
 
