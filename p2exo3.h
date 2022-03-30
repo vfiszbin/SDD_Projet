@@ -22,11 +22,6 @@ typedef struct protected{
     Signature *sgn;
 } Protected;
 
-typedef struct citoyen{
-    Key *clepublic;
-    Key *cleprive;
-}Citoyen;
-
 void init_key(Key* key, long val, long n );
 void init_pair_keys(Key* pkey,Key* skey, long low_size, long up_size);
 char* key_to_str (Key* key);

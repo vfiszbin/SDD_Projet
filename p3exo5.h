@@ -1,6 +1,6 @@
 
 #ifndef P3EXO5_H
-
+#define P3EXO5_H
 #include "p2exo3.h"
 
 typedef struct cellKey{ 
@@ -20,6 +20,6 @@ CellProtected* create_cell_protected (Protected* pr);
 void delete_list_cell(CellProtected* lcp);
 CellProtected* read_protected(char *filename);
 void print_list_cell_protected(CellProtected* pr);
-void supprime_declarations_non_valides(CellProtected **lcp);
+void delete_cell_protected(CellProtected* c);
 
 #endif

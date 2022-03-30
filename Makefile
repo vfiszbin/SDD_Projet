@@ -16,8 +16,8 @@ p2main : p2main.o p1exo1.o p1exo1.h p1exo2.o p1exo2.h p2exo3.o p2exo3.h p2exo4.o
 p2main.o : p2main.c p1exo1.h p1exo2.h p2exo3.h
 	gcc $(FLAGS) -c p2main.c -o p2main.o 
 
-p3main : p3main.o p1exo1.o p1exo1.h p1exo2.o p1exo2.h p2exo3.o p2exo3.h p2exo4.o p2exo4.h p3exo5.o p3exo5.h
-	gcc $(FLAGS) p3main.o p1exo1.o p1exo2.o p2exo3.o p2exo4.o  p3exo5.o -o p3main $(LIBM)
+p3main : p3main.o p1exo1.o p1exo1.h p1exo2.o p1exo2.h p2exo3.o p2exo3.h p2exo4.o p2exo4.h p3exo5.o p3exo5.h p3exo6.o p3exo6.h
+	gcc $(FLAGS) p3main.o p1exo1.o p1exo2.o p2exo3.o p2exo4.o  p3exo5.o p3exo6.o -o p3main $(LIBM)
 
 p3main.o : p3main.c p2exo3.h p3exo5.h
 	gcc $(FLAGS) -c p3main.c -o p3main.o 
@@ -36,6 +36,9 @@ p2exo4.o : p2exo4.c p2exo4.h
 
 p3exo5.o : p3exo5.c p3exo5.h
 	gcc $(FLAGS) -c p3exo5.c -o p3exo5.o 
+
+p3exo6.o : p3exo6.c p3exo6.h
+	gcc $(FLAGS) -c p3exo6.c -o p3exo6.o 
 
 clean :
 	rm -rf *.o

@@ -1,4 +1,5 @@
 #include "p3exo5.h"
+#include "p3exo6.h"
 
 int main(){
 	//Test de read_public_keys
