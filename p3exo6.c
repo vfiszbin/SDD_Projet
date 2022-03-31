@@ -41,18 +41,49 @@ Hashcell* create_hashcell(Key* key){
 	return c;
 }
 
-//int hash_function(Key* key,int size){
-//
-//}
+int hash_function(Key* key, int size){
+	return (key->val + val->n) % size;
+}
 
-int find_position(Hashtable* t,Key* key){
-	int i;
-	if(t!=NULL){
-		if(t->tab!=NULL){
-			for(i=0;i<t->size;i++){
-				if()
-			}
-		}
+int find_position(Hashtable* t, Key* key){
+	int pos = hash_function(key, t->size);
+	if (t->tab[pos]->key->val == key->val && t->tab[pos]->key->n == key->n ){//si l'element est a la bonne position dans la table
+		printf("Element trouvé à la bonne position\n");
+		return pos;
 	}
-	return 0;
+	int i = pos + 1;
+	if (i >= t->size) //si i depasse la taille du tableau
+		i = 0;
+	while (t->tab[i]->key->val != key->val && t->tab[i]->key->n != key->n && i != pos){
+		i++;
+		if (i >= t->size) //si i depasse la taille du tableau
+			i = 0; 
+	}
+	return i;
+}
+
+HashTable* create_hashtable(CellKey* keys, int size){
+	HashTable *t = (HashTable*) malloc(sizeof(HashTable));
+	t->tab = (Hashcell**) malloc(sizeof(Hashcell*) * size);
+	int i = 0;
+	while (i < size){
+		t-tab[i] = NULL;
+		i++;
+	}
+	i = 0;
+	Hashcell *c;
+	int pos;
+	while (keys){
+		c = create_hashcell(keys->data);
+		pos = hash_function(c->key, size);
+		while (t->tab[pos] != NULL){ //probing pour trouver la premiere case libre dans la table
+			pos++;
+			if (i >= size) //si pos depasse la taille du tableau
+				i = 0;
+		}
+		t->tab[pos] = c;
+
+		keys = keys->next;
+	}
+	return t;
 }
