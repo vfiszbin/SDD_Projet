@@ -32,8 +32,9 @@ void supprime_declarations_non_valides(CellProtected **lcp){
 	}
 }
 
-Hashcell* create_hashcell(Key* key){
-	Hashcell*c=(Hashcell*)malloc(sizeof(Hashcell));
+/*Alloue une cellule de la table de hachage, et qui initialise ses champs en mettant la valeur a zero*/
+HashCell* create_HashCell(Key* key){
+	HashCell*c=(HashCell*)malloc(sizeof(HashCell));
 	if (!c)
 		return NULL;
 	c->key=key;
@@ -41,11 +42,14 @@ Hashcell* create_hashcell(Key* key){
 	return c;
 }
 
+/*Fonction de hachage qui retourne la position d'un element dans la table de hachage selon les valeurs de sa cle*/
 int hash_function(Key* key, int size){
-	return (key->val + val->n) % size;
+	return (key->val + key->n) % size;
 }
 
-int find_position(Hashtable* t, Key* key){
+/*Cherche dans la table t s’il existe un element dont la cle publique est key, retourne sa position dans la table si l'element
+est trouve, la position a laquelle il devrait se trouver sinon*/
+int find_position(HashTable* t, Key* key){
 	int pos = hash_function(key, t->size);
 	if (t->tab[pos]->key->val == key->val && t->tab[pos]->key->n == key->n ){//si l'element est a la bonne position dans la table
 		printf("Element trouvé à la bonne position\n");
@@ -62,19 +66,21 @@ int find_position(Hashtable* t, Key* key){
 	return i;
 }
 
-HashTable* create_hashtable(CellKey* keys, int size){
+/*Cree et initialise une table de hachage de taille size contenant une cellule pour chaque cle de la liste chainee keys*/
+HashTable* create_HashTable(CellKey* keys, int size){
 	HashTable *t = (HashTable*) malloc(sizeof(HashTable));
-	t->tab = (Hashcell**) malloc(sizeof(Hashcell*) * size);
+	t->size = size;
+	t->tab = (HashCell**) malloc(sizeof(HashCell*) * size);
 	int i = 0;
 	while (i < size){
-		t-tab[i] = NULL;
+		t->tab[i] = NULL;
 		i++;
 	}
 	i = 0;
-	Hashcell *c;
+	HashCell *c;
 	int pos;
 	while (keys){
-		c = create_hashcell(keys->data);
+		c = create_HashCell(keys->data);
 		pos = hash_function(c->key, size);
 		while (t->tab[pos] != NULL){ //probing pour trouver la premiere case libre dans la table
 			pos++;

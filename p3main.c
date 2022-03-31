@@ -6,6 +6,7 @@ int main(){
 	CellKey *lck = read_public_keys("candidates.txt");
 	if (!lck)
 		return 1;
+
 	printf("\nListe chaînée de clés lues avec read_public_keys :\n");
 	print_list_keys(lck);
 
@@ -27,5 +28,22 @@ int main(){
 	print_list_cell_protected(lcp);
 
 	delete_list_cell(lcp);
+
+	//Test de create_HashTable
+	lck = read_public_keys("candidates.txt");
+	if (!lck)
+		return 1;
+	
+	CellKey *tmp = lck;
+	int list_size = 0;
+	while(tmp){ //calcule la taile de la liste
+		list_size++;
+		tmp = tmp->next;
+	}
+	HashTable *t = create_HashTable(lck, list_size * 2);
+	printf("%d\n", find_position(t, lck->data));
+
+	delete_list_keys(lck);
+
 	return 0;
 }
