@@ -31,3 +31,28 @@ void supprime_declarations_non_valides(CellProtected **lcp){
 		}
 	}
 }
+
+Hashcell* create_hashcell(Key* key){
+	Hashcell*c=(Hashcell*)malloc(sizeof(Hashcell));
+	if (!c)
+		return NULL;
+	c->key=key;
+	c->val=0;
+	return c;
+}
+
+//int hash_function(Key* key,int size){
+//
+//}
+
+int find_position(Hashtable* t,Key* key){
+	int i;
+	if(t!=NULL){
+		if(t->tab!=NULL){
+			for(i=0;i<t->size;i++){
+				if()
+			}
+		}
+	}
+	return 0;
+}
