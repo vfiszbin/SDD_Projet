@@ -42,6 +42,11 @@ HashCell* create_HashCell(Key* key){
 	return c;
 }
 
+/*Libere la memoire allouee pour la HashCell c*/
+void delete_HashCell(HashCell* c){
+	free(c);
+}
+
 /*Fonction de hachage qui retourne la position d'un element dans la table de hachage selon les valeurs de sa cle*/
 int hash_function(Key* key, int size){
 	return (key->val + key->n) % size;
@@ -92,4 +97,14 @@ HashTable* create_HashTable(CellKey* keys, int size){
 		keys = keys->next;
 	}
 	return t;
+}
+
+/*Supprime une table de hachage.*/
+void delete_hashtable(HashTable* t){
+	for (int i = 0; i < t->size; i++){
+		if (t->tab[i] !=  NULL)
+			delete_HashCell(t->tab[i]);
+	}
+	free(t->tab);
+	free(t);
 }

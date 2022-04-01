@@ -44,6 +44,7 @@ int main(){
 	printf("%d\n", find_position(t, lck->data));
 
 	delete_list_keys(lck);
+	delete_hashtable(t);
 
 	return 0;
 }
