@@ -108,3 +108,60 @@ void delete_hashtable(HashTable* t){
 	free(t->tab);
 	free(t);
 }
+
+int equal_keys(Key * k1, Key *k2){
+	return (k1->val == k2->val && k1->n == k2->n);
+}
+
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV){
+	//Cree la table de hachage des candidats
+	HashTable *hc = create_HashTable(candidates, sizeC);
+	if (!hc)
+		return NULL;
+	//Cree la table de hachage des votants
+	HashTable *hv = create_HashTable(voters, sizeV);
+	if (!hv){
+		delete_hashtable(hv);
+		return NULL;
+	}
+
+	/*Parcourt de la liste de declarations. 
+	On fait l'hypothese que les declarations invalides ont deja ete retires de la liste*/
+	int pos_v, pos_c;
+	Key *pKey_c;
+	while (decl){
+		//Verifie si la personne a le droit de voter
+		pos_v = find_position(hv, decl->data->pKey);
+		if (equal_keys(hv->tab[pos_v]->key, decl->data->pKey) && hv->tab[pos_v]->val == 0){ //la cle publique est bien dans la table la personne n'a pas vote
+			pKey_c = str_to_key(decl->data->mess);
+			if (!pKey_c){
+				delete_hashtable(hc);
+				delete_hashtable(hv);
+				return NULL;
+			}
+			pos_c = find_position(hc, pKey_c);
+			if (equal_keys(hc->tab[pos_c]->key, pKey_c)){ //la pkey choisie est bien celle d'un candidat
+				hc->tab[pos_c]->val++; //vote comptabilisé pour le candidat
+				hv->tab[pos_v]->val++; //le citoyen a vote
+			}
+			free(pKey_c);
+		}
+		decl = decl->next;
+	}
+
+	//Toutes les declarations ont etes depouillees
+	//Cherche le gagnant de l'election en parcourant hc
+	int max_votes = 0;
+	pos_c = 0;
+	for (int i = 0; i < hc->size; i++){
+		if (hc->tab[i] != NULL && hc->tab[i]->val > max_votes){
+			max_votes = hc->tab[i]->val;
+			pos_c = i;
+		}
+	}
+	pKey_c = hc->tab[pos_c]->key; //cle du gagnant
+	delete_hashtable(hc);
+	delete_hashtable(hv);
+	return pKey_c;
+
+}
