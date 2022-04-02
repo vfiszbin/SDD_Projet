@@ -16,6 +16,7 @@ int main(){
 	//Test de read_protect
 	CellProtected *lcp = read_protected("declarations.txt");
 	if (!lcp){
+		delete_list_keys(lck_c);
 		return 1;
 	}
 	printf("\nListe chaînée de déclarations signées lues avec read_protected :\n");
@@ -36,15 +37,22 @@ int main(){
 		tmp = tmp->next;
 	}
 	HashTable *t = create_HashTable(lck_c, list_size_c * 2);
-	printf("%d\n", find_position(t, lck_c->data));
+	if (!t){
+		delete_list_keys(lck_c);
+		delete_list_cell(lcp);
+		return 1;
+	}
+	printf("Pos=%d\n", find_position(t, lck_c->data));
 
-	
 	delete_hashtable(t);
 
 	//Test de compute_winner
 	CellKey *lck_v = read_public_keys("keys.txt");
-	if (!lck_v)
+	if (!lck_v){
+		delete_list_keys(lck_c);
+		delete_list_cell(lcp);
 		return 1;
+	}
 
 	tmp = lck_v;
 	int list_size_v = 0;
@@ -54,6 +62,12 @@ int main(){
 	}
 
 	Key *winner_pkey = compute_winner(lcp, lck_c, lck_v, list_size_c * 2, list_size_v * 2);
+	if (!winner_pkey){
+		delete_list_keys(lck_c);
+		delete_list_keys(lck_v);
+		delete_list_cell(lcp);
+		return 1;
+	}
 	printf("Winner pkey : (%lx,%lx)\n", winner_pkey->val, winner_pkey->n);
 	
 	delete_list_keys(lck_c);
