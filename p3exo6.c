@@ -57,7 +57,6 @@ est trouve, la position a laquelle il devrait se trouver sinon*/
 int find_position(HashTable* t, Key* key){
 	int pos = hash_function(key, t->size);
 	if (t->tab[pos]->key->val == key->val && t->tab[pos]->key->n == key->n ){//si l'element est a la bonne position dans la table
-		printf("Element trouvé à la bonne position\n");
 		return pos;
 	}
 	int i = pos + 1;
