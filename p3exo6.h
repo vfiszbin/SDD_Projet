@@ -8,14 +8,17 @@ void supprime_declarations_non_valides(CellProtected **lcp);
 typedef struct hashcell{
     Key* key;
     int val;
-}Hashcell;
+}HashCell;
 
 typedef struct hashtable{
-    Hashcell** tab;
+    HashCell** tab;
     int size;
-}Hashtable;
+}HashTable;
 
-Hashcell* create_hashcell(Key* key);
-//int hash_function(Key* key,int size);
+
+HashTable* create_HashTable(CellKey* keys, int size);
+int find_position(HashTable* t, Key* key);
+void delete_hashtable(HashTable* t);
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV);
 
 #endif
