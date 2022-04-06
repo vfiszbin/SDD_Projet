@@ -1,3 +1,5 @@
+
+   
 #include "p3exo6.h"
 
 /*Supprime toutes les declarations signees dont la signature n'est pas valide dans la liste chainee lcp*/
