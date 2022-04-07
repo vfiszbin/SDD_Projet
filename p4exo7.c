@@ -179,6 +179,7 @@ char* block_to_str(Block* block){
         return NULL;
     char* listevotes = protected_to_str(block->votes->data);
     if (!listevotes)
+        free(key);
         return NULL;
     int cpt=0;
     while (block->votes){
@@ -188,6 +189,8 @@ char* block_to_str(Block* block){
     int size = strlen(key)+strlen(listevotes)*cpt+strlen(block->previous_hash)+strlen(block->nonce)+3+cpt;
     char* caractere = (char*)malloc(size*sizeof(char));
     if(!caractere){
+        free(key);
+        free(listevotes);
         return NULL;
     }
     int i=0;
@@ -221,4 +224,14 @@ char* block_to_str(Block* block){
     free(key);
     free(listevotes);
     return caractere;
+}
+
+unsigned char* crypteensha256 (char* message){
+    unsigned char *d = SHA256(message,strlen(message),0);
+    int i;
+    for(i=0;i<SHA256_DIGEST_LENGTH;i++){
+        printf("%02x",d[i]);
+    }
+    putchar('\n');
+    return d;
 }

@@ -122,7 +122,7 @@ Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, i
 	//Cree la table de hachage des votants
 	HashTable *hv = create_HashTable(voters, sizeV);
 	if (!hv){
-		delete_hashtable(hv);
+		delete_hashtable(hc);
 		return NULL;
 	}
 
