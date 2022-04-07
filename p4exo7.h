@@ -4,7 +4,8 @@
 
 
 typedef struct block{
-    Key* autor;
+    Key* author;
+    int nb_votes;
     CellProtected* votes;
     unsigned char* hash;
     unsigned char* previous_hash;

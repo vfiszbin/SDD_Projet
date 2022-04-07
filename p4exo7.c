@@ -10,13 +10,24 @@ void ecrire_fichier(char* nom, Block* b){
 		return NULL;
 	}
     Protected * pr;
-    while(b){
+    char*pr_str;
+    if (b){
         //tu pense que on peut avoir plusieurs vote ?
-        fprintf("%lx,%lx\n",b->autor->n,b->autor->val);
+        fprintf("(%lx,%lx)\n",b->author->val, b->author->n);
+        fprintf("%d\n",b->nb_votes);
         while(b->votes){
             pr=init_protected(b->votes->data->pKey,b->votes->data->mess,b->votes->data->sgn);
-            char*pr_str=protected_to_str(pr);
-            fprintf("%s\n",pr_str);
+            if (!pr){
+                fclose(f);
+                return NULL;
+            }
+            pr_str=protected_to_str(pr);
+            if (!pr_str){
+                fclose(f);
+                free()
+                return NULL;
+            }
+            fprintf("%s\n", pr_str);
             b->votes->next;
         }
         fprintf("%s\n",b->hash);
@@ -24,6 +35,19 @@ void ecrire_fichier(char* nom, Block* b){
         fprintf("%d\n",b->nonce);
     }
     fclose(f);
+}
+
+Block * create_Block(Key *author, CellProtected *votes, unsigned char *hash, unsigned char *previous_hash, int nonce){
+    Block* b =(Block*)malloc(sizeof(Block));
+    if(!b){
+        return NULL
+    }
+    b->author=author;
+    b->votes=votes;
+    b->hash=hash;
+    b->previous_hash=previous_hash;
+    b->nonce=nonce;
+    return b;
 }
 
 Block* lire_fichier(char* nom){
@@ -42,51 +66,115 @@ Block* lire_fichier(char* nom){
     Protected* pr;
     CellProtected* c;
 	CellProtected* lcp = NULL;
-    char* hash;
-    char* hash_precedent;
+    unsigned char* hash;
+    unsigned char* hash_precedent;
     int nonce;
-    fgets(buffer, BUFFLEN, f);
-    sscanf(buffer,"(%lx,%lx)",&val,&n);
-    init_key(val,n,cle);
-    //si plusieurs vote je ne sais pas comment analyse plusieurs ligne de vote
-    fgets(buffer, BUFFLEN, f);
-    pr = str_to_protected(buffer);
-	if (!pr){
-		delete_list_cell(lcp);
-		fclose(f);
-		return NULL;
-	}
-	c = create_cell_protected(pr);
-	if (!c){
-		free(pr);
-		delete_list_cell(lcp);
-		fclose(f);
-		return NULL;
-		}
-	add_cellProtected_to_front(&lcp, c);
-    fgets(buffer, BUFFLEN, f);
-    sscanf("%s",&hash);
-    fgets(buffer, BUFFLEN, f);
-    sscanf("%s",&hash_precedent);
-    fgets(buffer, BUFFLEN, f);
-    sscanf("%d",&nonce);
-    Block* b =(Block*)malloc(sizeof(Block));
-        if(!b){
-            delete_list_cell(lcp);
-            free(cle);
-            fclose(f);
-        }
-    b->autor=cle;
-    b->votes->data=lcp;
-    b->hash=hash;
-    b->previous_hash=hash_precedent;
-    b->nonce=nonce;
+    int nb_votes;
+    if (fgets(buffer, BUFFLEN, f) == NULL){
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+    if (sscanf(buffer,"(%lx,%lx)",&val, &n) != 2){
+        free(Key);
+        fclose(f);
+        return NULL;   
+    }
+    
+    init_key(cle, val, n);
+    
+    //lit nb_votes
+    if (fgets(buffer, BUFFLEN, f) == NULL){
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+    if (sscanf(buffer,"%d",&nb_votes) != 1){
+        free(Key);
+        fclose(f);
+        return NULL;   
+    }
 
+    //lit les déclarations de vote
+    for (int i = 0; i < nb_votes; i++){
+        if (fgets(buffer, BUFFLEN, f) == NULL){
+            delete_list_cell(lcp);
+            free(Key);
+            fclose(f);
+            return NULL;   
+        }
+        pr = str_to_protected(buffer);
+        if (!pr){
+            delete_list_cell(lcp);
+            free(Key);
+            fclose(f);
+            return NULL;
+        }
+        c = create_cell_protected(pr);
+        if (!c){
+            free(pr);
+            delete_list_cell(lcp);
+            free(Key);
+            fclose(f);
+            return NULL;
+            }
+        add_cellProtected_to_front(&lcp, c);
+    }
+
+    //lit le hash du bloc
+    if (fgets(buffer, BUFFLEN, f) == NULL){
+        delete_list_cell(lcp);
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+    if (sscanf("%s",&hash) != 1){
+        delete_list_cell(lcp);
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+
+    //lit le hash du bloc precedent
+    if (fgets(buffer, BUFFLEN, f) == NULL){
+        delete_list_cell(lcp);
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+    if (sscanf("%s", &hash_precedent) != 1){
+        delete_list_cell(lcp);
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+
+    //lit nonce
+    if (fgets(buffer, BUFFLEN, f) == NULL){
+        delete_list_cell(lcp);
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+    if (sscanf("%d", &nonce) != 1){
+        delete_list_cell(lcp);
+        free(Key);
+        fclose(f);
+        return NULL;
+    }
+
+
+    Block *b = create_Block(cle,lcp,hash,hash_precedent,nonce);
+    if(!b){       
+        delete_list_cell(lcp);
+        free(cle);
+        fclose(f);
+    }
     return b;
 }
 
 char* block_to_str(Block* block){
-    char* key = key_to_str(block->autor);
+    char* key = key_to_str(block->author);
     if (!key)
         return NULL;
     char* listevotes = protected_to_str(block->votes->data);
