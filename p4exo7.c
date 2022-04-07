@@ -24,7 +24,7 @@ void ecrire_fichier(char* nom, Block* b){
             pr_str=protected_to_str(pr);
             if (!pr_str){
                 fclose(f);
-                free()
+                free(pr);
                 return NULL;
             }
             fprintf("%s\n", pr_str);
@@ -40,7 +40,7 @@ void ecrire_fichier(char* nom, Block* b){
 Block * create_Block(Key *author, CellProtected *votes, unsigned char *hash, unsigned char *previous_hash, int nonce){
     Block* b =(Block*)malloc(sizeof(Block));
     if(!b){
-        return NULL
+        return NULL;
     }
     b->author=author;
     b->votes=votes;
@@ -71,12 +71,12 @@ Block* lire_fichier(char* nom){
     int nonce;
     int nb_votes;
     if (fgets(buffer, BUFFLEN, f) == NULL){
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
     if (sscanf(buffer,"(%lx,%lx)",&val, &n) != 2){
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;   
     }
@@ -85,12 +85,12 @@ Block* lire_fichier(char* nom){
     
     //lit nb_votes
     if (fgets(buffer, BUFFLEN, f) == NULL){
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
     if (sscanf(buffer,"%d",&nb_votes) != 1){
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;   
     }
@@ -99,14 +99,14 @@ Block* lire_fichier(char* nom){
     for (int i = 0; i < nb_votes; i++){
         if (fgets(buffer, BUFFLEN, f) == NULL){
             delete_list_cell(lcp);
-            free(Key);
+            free(cle);
             fclose(f);
             return NULL;   
         }
         pr = str_to_protected(buffer);
         if (!pr){
             delete_list_cell(lcp);
-            free(Key);
+            free(cle);
             fclose(f);
             return NULL;
         }
@@ -114,7 +114,7 @@ Block* lire_fichier(char* nom){
         if (!c){
             free(pr);
             delete_list_cell(lcp);
-            free(Key);
+            free(cle);
             fclose(f);
             return NULL;
             }
@@ -124,13 +124,13 @@ Block* lire_fichier(char* nom){
     //lit le hash du bloc
     if (fgets(buffer, BUFFLEN, f) == NULL){
         delete_list_cell(lcp);
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
     if (sscanf("%s",&hash) != 1){
         delete_list_cell(lcp);
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
@@ -138,13 +138,13 @@ Block* lire_fichier(char* nom){
     //lit le hash du bloc precedent
     if (fgets(buffer, BUFFLEN, f) == NULL){
         delete_list_cell(lcp);
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
     if (sscanf("%s", &hash_precedent) != 1){
         delete_list_cell(lcp);
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
@@ -152,13 +152,13 @@ Block* lire_fichier(char* nom){
     //lit nonce
     if (fgets(buffer, BUFFLEN, f) == NULL){
         delete_list_cell(lcp);
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
     if (sscanf("%d", &nonce) != 1){
         delete_list_cell(lcp);
-        free(Key);
+        free(cle);
         fclose(f);
         return NULL;
     }
