@@ -85,3 +85,52 @@ Block* lire_fichier(char* nom){
     return b;
 }
 
+char* block_to_str(Block* block){
+    char* key = key_to_str(block->autor);
+    if (!key)
+        return NULL;
+    char* listevotes = protected_to_str(block->votes->data);
+    if (!listevotes)
+        return NULL;
+    int cpt=0;
+    while (block->votes){
+        cpt++;
+        block=block->votes->next;
+    }
+    int size = strlen(key)+strlen(listevotes)*cpt+strlen(block->previous_hash)+strlen(block->nonce)+3+cpt;
+    char* caractere = (char*)malloc(size*sizeof(char));
+    if(!caractere){
+        return NULL;
+    }
+    int i=0;
+    int j=0;
+    while(key[j]){
+        caractere[i]=key[j];
+        i++;
+        j++;
+    }
+    caractere[i] = ' ';
+    i++;
+    j=0;
+    while(listevotes[j]){
+        caractere[i]=listevotes[j];
+        i++;
+        j++;
+    }
+    caractere[i] = ' ';
+    i++;
+    j=0;
+    while(block->previous_hash[j]){//pas sur de pouvoir copie ca 
+        caractere[i]=block->previous_hash[j];
+        i++;
+        j++;
+    }
+    caractere[i] = ' ';
+    i++;
+    caractere[i]=block->nonce;
+    i++;
+    caractere[i]='\0';
+    free(key);
+    free(listevotes);
+    return caractere;
+}
