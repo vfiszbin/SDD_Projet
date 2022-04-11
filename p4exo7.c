@@ -225,7 +225,7 @@ char* block_to_str(Block* block){
     free(listevotes);
     return caractere;
 }
-
+//question 7.5
 unsigned char* crypteensha256 (char* message){
     unsigned char *d = SHA256(message,strlen(message),0);
     int i;
@@ -234,4 +234,18 @@ unsigned char* crypteensha256 (char* message){
     }
     putchar('\n');
     return d;
+}
+
+//question 7.9
+void delete_block(Block *b){
+    CellProtected* tmp;
+    if(b!=NULL){
+        while(b->votes!=NULL){
+            tmp=b->votes;
+            b->votes=b->votes->next;
+            free(b->votes);
+        }
+        free(b->hash);
+        free(b->previous_hash);
+    }
 }
