@@ -128,7 +128,7 @@ Block* lire_fichier(char* nom){
         fclose(f);
         return NULL;
     }
-    if (sscanf("%s",&hash) != 1){
+    if (sscanf(buffer,"%s",&hash) != 1){
         delete_list_cell(lcp);
         free(cle);
         fclose(f);
@@ -142,7 +142,7 @@ Block* lire_fichier(char* nom){
         fclose(f);
         return NULL;
     }
-    if (sscanf("%s", &hash_precedent) != 1){
+    if (sscanf(buffer,"%s", &hash_precedent) != 1){
         delete_list_cell(lcp);
         free(cle);
         fclose(f);
@@ -156,7 +156,7 @@ Block* lire_fichier(char* nom){
         fclose(f);
         return NULL;
     }
-    if (sscanf("%d", &nonce) != 1){
+    if (sscanf(buffer,"%d", &nonce) != 1){
         delete_list_cell(lcp);
         free(cle);
         fclose(f);
