@@ -198,58 +198,95 @@ Block* lire_block(char* nom){
     return b;
 }
 
-// char* block_to_str(Block* block){
-//     char* key = key_to_str(block->author);
-//     if (!key)
-//         return NULL;
-//     char* listevotes = protected_to_str(block->votes->data);
-//     if (!listevotes)
-//         free(key);
-//         return NULL;
-//     int cpt=0;
-//     while (block->votes){
-//         cpt++;
-//         block=block->votes->next;
-//     }
-//     int size = strlen(key)+strlen(listevotes)*cpt+strlen(block->previous_hash)+strlen(block->nonce)+3+cpt;
-//     char* caractere = (char*)malloc(size*sizeof(char));
-//     if(!caractere){
-//         free(key);
-//         free(listevotes);
-//         return NULL;
-//     }
-//     int i=0;
-//     int j=0;
-//     while(key[j]){
-//         caractere[i]=key[j];
-//         i++;
-//         j++;
-//     }
-//     caractere[i] = ' ';
-//     i++;
-//     j=0;
-//     while(listevotes[j]){
-//         caractere[i]=listevotes[j];
-//         i++;
-//         j++;
-//     }
-//     caractere[i] = ' ';
-//     i++;
-//     j=0;
-//     while(block->previous_hash[j]){//pas sur de pouvoir copie ca 
-//         caractere[i]=block->previous_hash[j];
-//         i++;
-//         j++;
-//     }
-//     caractere[i] = ' ';
-//     i++;
-//     caractere[i]=block->nonce;
-//     i++;
-//     caractere[i]='\0';
-//     free(key);
-//     free(listevotes);
-//     return caractere;
-// }
+char *strjoin(char *s1, char const *s2)
+{
+	size_t	i;
+	size_t	j;
+	char	*ret_str;
+
+	if (!s1 || !s2)
+		return (NULL);
+	i = strlen(s1) + strlen(s2);
+	ret_str = malloc(sizeof(char) * (i + 2));
+	if (!ret_str){
+        free(s1);
+        return (NULL);
+    }
+	i = 0;
+	j = -1;
+	while (s1[++j])
+	{
+		ret_str[i] = s1[j];
+		i++;
+	}
+
+    //place un retour a la ligne entre les chaines
+    ret_str[i] = '\n';
+    i++;
+
+	j = -1;
+	while (s2[++j])
+	{
+		ret_str[i] = s2[j];
+		i++;
+	}
+	ret_str[i] = '\0';
+
+    free(s1); //libere la premiere chaine
+	return (ret_str);
+}
+
+char* block_to_str(Block* block){
+    char *block_str;
+    char* key = key_to_str(block->author);
+    if (!key)
+        return NULL;
+
+    block_str = strjoin(key, (char *)block->previous_hash); //key est libéré dans la fonction
+    if (!block_str){
+        free(key);
+        return NULL;
+    }
+    
+    //passage des votes en chaine
+    CellProtected *vote = block->votes;
+    char * pr_str;
+    while(vote){
+        pr_str = protected_to_str(vote->data);
+        if (!pr_str){
+            free(block_str);
+            return NULL;
+        }
+        block_str = strjoin(block_str, pr_str); // le block_str precedent est libere dans la fonction
+        if(!block_str)
+        {
+            free(pr_str);
+            return NULL;
+        }
+        free(pr_str);
+        vote = vote->next;
+    }
+
+    char *nonce_str = (char*) malloc((int)((ceil(log10(block->nonce))+1)*sizeof(char))); //alloue une chaine avec autant de caracteres qu'il y a de chiffres dans le nonce + le char nul
+    if (!nonce_str){
+        free(block_str);
+        return NULL;
+    }
+    int nb_char = sprintf(nonce_str, "%d", block->nonce);
+    nonce_str[nb_char]= '\0';
+
+
+    block_str = strjoin(block_str, nonce_str);
+    if (!block_str){
+        free(nonce_str);
+        return NULL;
+    }
+    free(nonce_str);
+
+    // printf("\nto_malloc=%d\n", (int)((ceil(log10(block->nonce))+1)*sizeof(char)));
+    return block_str;
+
+}
 
 //question 7.5
 // unsigned char* crypteensha256 (char* message){
@@ -283,12 +320,12 @@ void delete_block(Block *b){
 
 
 int main(){
+    //Tests create_Block et ecricre_block
     Key *k = malloc(sizeof(Key));
     if (!k)
         return 1;
     k->n = 123;
     k->val = 456;
-
 
     CellProtected *lcp = read_protected("declarations.txt");
 	if (!lcp){
@@ -296,10 +333,21 @@ int main(){
 		return 1;
 	}
     unsigned char *h = malloc(sizeof(unsigned char) * 3);
+    if (!h){
+        free(k);
+        delete_list_cell(lcp);
+        return 1;
+    }
     h[0] = 'h'; 
     h[1] = '1'; 
     h[2] = '\0'; 
     unsigned char *prev_h = malloc(sizeof(unsigned char) * 3);
+    if (!prev_h){
+        free(k);
+        delete_list_cell(lcp);
+        free(h);
+        return 1;
+    }
     prev_h[0] = 'h'; 
     prev_h[1] = '0'; 
     prev_h[2] = '\0'; 
@@ -313,22 +361,49 @@ int main(){
 	}
 
     Block *b = create_Block(k, lcp, h, prev_h, 111, nb_votes);
+    if (!b){
+        free(k);
+        delete_list_cell(lcp);
+        free(h);
+        return 1;
+    }
 
-    ecrire_block("blocks.txt", b);
+    if (ecrire_block("blocks.txt", b) == 0){
+        free(b->author);
+        delete_list_cell(b->votes);
+        b->votes = NULL;
+        delete_block(b);
+        return 1;
+    }
 
     free(b->author);
     delete_list_cell(b->votes);
     b->votes = NULL;
     delete_block(b);
 
-
+    //Tests lire_block
     Block *b2 = lire_block("blocks.txt");
+    if (!b2)
+        return 1;
 
-    ecrire_block("blocks.txt", b2);
+    if (ecrire_block("blocks.txt", b2) == 0){ //doit ecrire la meme chose que b dans blocks.txt
+        free(b2->author);
+        delete_list_cell(b2->votes);
+        b2->votes = NULL;
+        delete_block(b2);
+        return 1;
+    }
+
+
+
+    //Tests block_to_str
+    char *block_str = block_to_str(b2);
+    printf("block_str=\n%s\n", block_str);
 
     free(b2->author);
     delete_list_cell(b2->votes);
     b2->votes = NULL;
     delete_block(b2);
+    free(block_str);
 }
 
