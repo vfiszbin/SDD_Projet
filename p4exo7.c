@@ -324,6 +324,8 @@ int main(){
 
     Block *b2 = lire_block("blocks.txt");
 
+    ecrire_block("blocks.txt", b2);
+
     free(b2->author);
     delete_list_cell(b2->votes);
     b2->votes = NULL;
