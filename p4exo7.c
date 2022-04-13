@@ -283,7 +283,6 @@ char* block_to_str(Block* block){
     }
     free(nonce_str);
 
-    // printf("\nto_malloc=%d\n", (int)((ceil(log10(block->nonce))+1)*sizeof(char)));
     return block_str;
 
 }
