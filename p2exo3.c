@@ -132,6 +132,14 @@ Signature* str_to_signature(char* str){
     return init_signature(content , num);
 }
 
+/*Libere une structure de type protected ainsi que tous ses champs*/
+void delete_protected(Protected * pr){
+    free(pr->pKey);
+    free(pr->mess);
+    free(pr->sgn);
+    free(pr);
+}
+
 /*Alloue, initialise et retourne une structure Protected avec la clé publique pKey, le message mess et la signature sgn*/
 Protected* init_protected(Key* pKey, char* mess, Signature* sgn){
     Protected *pr = malloc(sizeof(Protected));

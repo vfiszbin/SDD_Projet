@@ -9,7 +9,6 @@ int ecrire_block(char* nom, Block* b){
 		printf("Erreur d'ouverture de %s\n", nom);
 		return 0;
 	}
-    Protected * pr;
     CellProtected *vote;
     char*pr_str;
     if (b){
@@ -17,18 +16,14 @@ int ecrire_block(char* nom, Block* b){
         fprintf(f, "%d\n",b->nb_votes);
         vote = b->votes;
         while(vote){
-            pr=init_protected(b->votes->data->pKey, b->votes->data->mess, b->votes->data->sgn);
-            if (!pr){
-                fclose(f);
-                return 0;
-            }
-            pr_str=protected_to_str(pr);
+            pr_str=protected_to_str(vote->data);
             if (!pr_str){
                 fclose(f);
-                free(pr);
                 return 0;
             }
             fprintf(f, "%s\n", pr_str);
+
+            free(pr_str);
             vote = vote->next;
         }
         fprintf(f, "%s\n",b->hash);
@@ -131,9 +126,17 @@ Block* lire_block(char* nom){
         fclose(f);
         return NULL;
     }
+    hash = (unsigned char*)malloc(sizeof(unsigned char) * strlen(buffer)); //alloue une chaine d'unsigned char de la bonne taille
+    if (!hash){
+        delete_list_cell(lcp);
+        free(cle);
+        fclose(f);
+        return NULL;
+    }
     if (sscanf(buffer,"%s",hash) != 1){
         delete_list_cell(lcp);
         free(cle);
+        free(hash);
         fclose(f);
         return NULL;
     }
@@ -142,12 +145,23 @@ Block* lire_block(char* nom){
     if (fgets(buffer, BUFFLEN, f) == NULL){
         delete_list_cell(lcp);
         free(cle);
+        free(hash);
+        fclose(f);
+        return NULL;
+    }
+    hash_precedent = (unsigned char*)malloc(sizeof(unsigned char) * strlen(buffer)); //alloue une chaine d'unsigned char de la bonne taille
+    if (!hash_precedent){
+        delete_list_cell(lcp);
+        free(cle);
+        free(hash);
         fclose(f);
         return NULL;
     }
     if (sscanf(buffer,"%s", hash_precedent) != 1){
         delete_list_cell(lcp);
         free(cle);
+        free(hash);
+        free(hash_precedent);
         fclose(f);
         return NULL;
     }
@@ -156,12 +170,16 @@ Block* lire_block(char* nom){
     if (fgets(buffer, BUFFLEN, f) == NULL){
         delete_list_cell(lcp);
         free(cle);
+        free(hash);
+        free(hash_precedent);
         fclose(f);
         return NULL;
     }
     if (sscanf(buffer,"%d", &nonce) != 1){
         delete_list_cell(lcp);
         free(cle);
+        free(hash);
+        free(hash_precedent);
         fclose(f);
         return NULL;
     }
@@ -171,8 +189,12 @@ Block* lire_block(char* nom){
     if(!b){       
         delete_list_cell(lcp);
         free(cle);
+        free(hash);
+        free(hash_precedent);
         fclose(f);
     }
+
+    fclose(f);
     return b;
 }
 
@@ -241,21 +263,29 @@ Block* lire_block(char* nom){
 // }
 
 //question 7.9
-// void delete_block(Block *b){
-//     CellProtected* tmp;
-//     if(b!=NULL){
-//         while(b->votes!=NULL){
-//             tmp=b->votes;
-//             b->votes=b->votes->next;
-//             free(b->votes);
-//         }
-//         free(b->hash);
-//         free(b->previous_hash);
-//     }
-// }
+void delete_block(Block *b){
+    if (b != NULL){
+        CellProtected* tmp;
+        CellProtected* vote;
+        vote = b->votes;
+        while(vote){
+            tmp = vote;
+            vote = vote->next;
+            free(tmp);
+        }
+
+        free(b->hash);
+        free(b->previous_hash);
+        free(b);
+    }
+}
+
+
 
 int main(){
     Key *k = malloc(sizeof(Key));
+    if (!k)
+        return 1;
     k->n = 123;
     k->val = 456;
 
@@ -265,8 +295,14 @@ int main(){
 		free(k);
 		return 1;
 	}
-    unsigned char h [] = "hash";
-    unsigned char ph [] = "prev_hash";
+    unsigned char *h = malloc(sizeof(unsigned char) * 3);
+    h[0] = 'h'; 
+    h[1] = '1'; 
+    h[2] = '\0'; 
+    unsigned char *prev_h = malloc(sizeof(unsigned char) * 3);
+    prev_h[0] = 'h'; 
+    prev_h[1] = '0'; 
+    prev_h[2] = '\0'; 
 
 
     CellProtected* tmp = lcp;
@@ -276,10 +312,21 @@ int main(){
 		tmp = tmp->next;
 	}
 
-    Block *b = create_Block(k, lcp, h, ph, 111, nb_votes);
+    Block *b = create_Block(k, lcp, h, prev_h, 111, nb_votes);
 
     ecrire_block("blocks.txt", b);
 
-    // Block *b2 = lire_block("blocks.txt");
+    free(b->author);
+    delete_list_cell(b->votes);
+    b->votes = NULL;
+    delete_block(b);
+
+
+    Block *b2 = lire_block("blocks.txt");
+
+    free(b2->author);
+    delete_list_cell(b2->votes);
+    b2->votes = NULL;
+    delete_block(b2);
 }
 

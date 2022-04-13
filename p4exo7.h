@@ -1,6 +1,7 @@
 #ifndef P4EXO7_H
 #define P4EXO7_H
 #include "p3exo6.h"
+#include <string.h>
 
 
 typedef struct block{
