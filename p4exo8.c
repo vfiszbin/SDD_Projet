@@ -78,27 +78,37 @@ void delete_node(CellTree* node){
     }
 }
 
+/* pas sur 
 CellTree* highest_child(CellTree* cell){
     CellTree* high;
-    CellTree* tmp;
-    int hauteur_max=0;
-    int cpt=0;
+    CellTree* tmp=cell->firstChild->nextBro;
     if(cell){
-        while(cell->nextBro!=NULL){
-            while(cell->firstChild!=NULL){
-                tmp=cell->firstChild;
-                cell=tmp;
-                cpt++;
+        if(cell->firstChild!=NULL){
+            high=cell->firstChild;
+            while(tmp){
+                if(high->height<tmp->height){
+                    high=tmp;
+                }
+            tmp=tmp->nextBro;
             }
-            if(hauteur_max>cpt){
-            hauteur_max=cpt;
-            cell=high;
-            }
-            cpt=0;
+            return high;
         }
-        //on retourne le premier fils?
-        return high;
-    }else{
-        return NULL;
+        return cell;
     }
+    return NULL;
 }
+
+CellTree* last_node(CellTree* tree){
+    CellTree* high=highest_child(tree);
+    CellTree* tmp=high->firstChild;
+    if(high!=NULL){
+        if(high==tree){
+            return tree;
+        }
+        while(tmp!=NULL){
+            tmp=tmp->firstChild;
+        }
+        return tmp;
+    }
+    return NULL;
+}*/
