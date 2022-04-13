@@ -112,3 +112,27 @@ CellTree* last_node(CellTree* tree){
     }
     return NULL;
 }*/
+
+CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2){
+    CellProtected* listfusion = (CellProtected*)malloc(1024*sizeof(CellProtected));
+    if(!listfusion){
+        return NULL;
+    }
+    if(!list1){
+        return list2;
+    }
+    if(!list2){
+        return list1;
+    }
+    while(list1!=NULL){
+        listfusion->data=list1->data;
+        list1=list1->next;
+        listfusion=listfusion->next;       
+    }
+    while(list2!=NULL){
+        listfusion->data=list2->data;
+        list2=list2->next;
+        listfusion=listfusion->next;
+    }
+    return listfusion;
+}
