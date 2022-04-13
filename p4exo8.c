@@ -48,7 +48,7 @@ void add_child(CellTree* father, CellTree* child){
     }
 }
 
-
+//la racine
 void print_tree(CellTree* arbre){
     CellTree* copie;
     copie=arbre;
@@ -66,4 +66,39 @@ void print_tree(CellTree* arbre){
         }
     }
     
+}
+//libere les noeuds de l'arbre
+void delete_node(CellTree* node){
+    if(node){
+        delete_block(node->block);
+        delete_node(node->father);
+        delete_node(node->nextBro);
+        delete_node(node->firstChild);
+        free(node);
+    }
+}
+
+CellTree* highest_child(CellTree* cell){
+    CellTree* high;
+    CellTree* tmp;
+    int hauteur_max=0;
+    int cpt=0;
+    if(cell){
+        while(cell->nextBro!=NULL){
+            while(cell->firstChild!=NULL){
+                tmp=cell->firstChild;
+                cell=tmp;
+                cpt++;
+            }
+            if(hauteur_max>cpt){
+            hauteur_max=cpt;
+            cell=high;
+            }
+            cpt=0;
+        }
+        //on retourne le premier fils?
+        return high;
+    }else{
+        return NULL;
+    }
 }

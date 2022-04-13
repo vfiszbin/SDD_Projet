@@ -10,5 +10,10 @@ typedef struct block_tree_cell{
     int height;
 }CellTree;
 
-
+CellTree* create_node(Block* b);
+int update_height(CellTree* father, CellTree* child);
+void add_child(CellTree* father, CellTree* child);
+void print_tree(CellTree* arbre);
+void delete_node(CellTree* node);
+CellTree* highest_child(CellTree* cell);
 #endif
