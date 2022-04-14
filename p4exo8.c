@@ -38,6 +38,7 @@ void add_child(CellTree* father, CellTree* child){
     }
     father->height=child->height+1;
     father->firstChild=child;
+    child->father=father;
     CellTree* Grandpa;
     CellTree* fatherbis;
     fatherbis=father;
@@ -60,14 +61,13 @@ void print_tree(CellTree* arbre){
     {
         if(arbre->father==NULL){
             printf("%d,%s\n",copie->height,copie->block->hash);
-            printf("je suis son fil \n");
+            printf("voici mon fils\n");
             print_tree(copie->firstChild);
-            printf("je suis son frere \n");
-            print_tree(copie->nextBro);
         }else{
             printf("%d,%s\n",copie->height,copie->block->hash);
+            printf("voici mon frere\n");
             print_tree(copie->nextBro);
-            //printf("\n");
+            printf("voici mon fils\n");
             print_tree(copie->firstChild);
         }
     }
