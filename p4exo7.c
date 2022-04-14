@@ -318,7 +318,7 @@ void delete_block(Block *b){
 
 
 
-int main(){
+/*int main(){
     //Tests create_Block et ecricre_block
     Key *k = malloc(sizeof(Key));
     if (!k)
@@ -404,5 +404,5 @@ int main(){
     b2->votes = NULL;
     delete_block(b2);
     free(block_str);
-}
+}*/
 

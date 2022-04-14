@@ -11,6 +11,7 @@ CellTree* create_node(Block* b){
     T->firstChild=NULL;
     T->nextBro=NULL;
     T->height=0;
+    return T;
 }
 
 int update_height(CellTree* father, CellTree* child){
@@ -30,10 +31,10 @@ int update_height(CellTree* father, CellTree* child){
 
 void add_child(CellTree* father, CellTree* child){
     if(!father){
-        return 0;
+        return;
     }
     if(!child){
-        return 0;
+        return;
     }
     father->height=child->height+1;
     father->firstChild=child;
@@ -54,14 +55,19 @@ void print_tree(CellTree* arbre){
     copie=arbre;
     if(!arbre){
         printf("le noeud est vide");
+        printf("\n");
     }else
     {
         if(arbre->father==NULL){
-            printf("%d,%s",copie->height,copie->block->hash);
+            printf("%d,%s\n",copie->height,copie->block->hash);
+            printf("je suis son fil \n");
             print_tree(copie->firstChild);
-        }else{
-            printf("%d,%s",copie->height,copie->block->hash);
+            printf("je suis son frere \n");
             print_tree(copie->nextBro);
+        }else{
+            printf("%d,%s\n",copie->height,copie->block->hash);
+            print_tree(copie->nextBro);
+            //printf("\n");
             print_tree(copie->firstChild);
         }
     }
@@ -78,7 +84,7 @@ void delete_node(CellTree* node){
     }
 }
 
-/* pas sur 
+
 CellTree* highest_child(CellTree* cell){
     CellTree* high;
     CellTree* tmp=cell->firstChild->nextBro;
@@ -93,7 +99,7 @@ CellTree* highest_child(CellTree* cell){
             }
             return high;
         }
-        return cell;
+        return NULL;
     }
     return NULL;
 }
@@ -102,16 +108,13 @@ CellTree* last_node(CellTree* tree){
     CellTree* high=highest_child(tree);
     CellTree* tmp=high->firstChild;
     if(high!=NULL){
-        if(high==tree){
-            return tree;
-        }
         while(tmp!=NULL){
             tmp=tmp->firstChild;
         }
         return tmp;
     }
     return NULL;
-}*/
+}
 
 CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2){
     CellProtected* listfusion = (CellProtected*)malloc(1024*sizeof(CellProtected));
