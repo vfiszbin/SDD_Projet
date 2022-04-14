@@ -10,4 +10,5 @@ int main(){
     	printf("%02x", d[i]);    
 	}
 	putchar('\n');
-	return 0;}
+	return 0;
+}

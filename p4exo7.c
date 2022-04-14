@@ -288,15 +288,10 @@ char* block_to_str(Block* block){
 }
 
 //question 7.5
-// unsigned char* crypteensha256 (char* message){
-//     unsigned char *d = SHA256(message,strlen(message),0);
-//     int i;
-//     for(i=0;i<SHA256_DIGEST_LENGTH;i++){
-//         printf("%02x",d[i]);
-//     }
-//     putchar('\n');
-//     return d;
-// }
+unsigned char* crypt_to_sha256 (char* message){
+    unsigned char *d = SHA256((unsigned char *)message, strlen(message), 0);
+    return d;
+}
 
 //question 7.9
 void delete_block(Block *b){
@@ -310,15 +305,43 @@ void delete_block(Block *b){
             free(tmp);
         }
 
-        free(b->hash);
+        //free(b->hash);
         free(b->previous_hash);
         free(b);
     }
 }
 
+/*Teste si la valeur hachee commence par d zeros successifs*/
+int d_succesive_zeros(unsigned char *hashed_value_of_block, int d){
+    for(int i=0; i < d; i++){
+        if (hashed_value_of_block[i] != 0)
+            return 0;
+    }
+    return 1;
+}
+
+void compute_proof_of_work(Block *B, int d){
+    char *block_str = block_to_str(B);
+    if (!block_str)
+        return;
+    
+    unsigned char *hashed_value_of_block = crypt_to_sha256(block_str); //PROTEGER CA ???
+    B->hash = hashed_value_of_block;
+
+    while(d_succesive_zeros(hashed_value_of_block, d) == 0){
+        // free(block_str);
+        B->nonce++;
+        block_str = block_to_str(B);
+        if (!block_str)
+            return;
+        hashed_value_of_block = crypt_to_sha256(block_str);
+        B->hash = hashed_value_of_block;
+    }
+}
 
 
-/*int main(){
+
+int main(){
     //Tests create_Block et ecricre_block
     Key *k = malloc(sizeof(Key));
     if (!k)
@@ -364,6 +387,7 @@ void delete_block(Block *b){
         free(k);
         delete_list_cell(lcp);
         free(h);
+        free(prev_h);
         return 1;
     }
 
@@ -393,16 +417,29 @@ void delete_block(Block *b){
         return 1;
     }
 
-
-
     //Tests block_to_str
     char *block_str = block_to_str(b2);
     printf("block_str=\n%s\n", block_str);
+
+    free(block_str);
+
+    //Tests crypt_to_sha256
+    unsigned char *hashed_value_of_block = crypt_to_sha256("Rosetta code");
+    printf("'Rosetta code' crypté en sha256 =\n");
+    for(int i=0; i < SHA256_DIGEST_LENGTH; i++){
+        printf("%02x",hashed_value_of_block[i]);
+    }
+    putchar('\n');
+
+    //Tests compute_proof_of_work
+    int d = 2;
+    compute_proof_of_work(b2, d);
+    printf("Pour une proof of work avec %d zéros\n", d);
+    printf("nonce=%d\n", b2->nonce);
+    printf("valeur hachée du bloc=%s\n", b2->hash);
 
     free(b2->author);
     delete_list_cell(b2->votes);
     b2->votes = NULL;
     delete_block(b2);
-    free(block_str);
-}*/
-
+}
