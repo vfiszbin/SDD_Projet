@@ -136,3 +136,16 @@ CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2)
     }
     return listfusion;
 }
+
+CellProtected* fusion_arbre(CellTree* tree){
+    CellTree* high = highest_child(tree);
+    CellProtected* liste_vote;
+    if(!high){
+        return NULL;
+    }
+    while(high->firstChild!=NULL){
+        liste_vote=fusion_liste_protected(liste_vote,high->firstChild->block->votes);
+        high=high->firstChild;
+    }
+    return liste_vote;
+}
