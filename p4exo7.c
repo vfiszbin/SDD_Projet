@@ -2,6 +2,7 @@
 
 #define BUFFLEN 1024
 
+/*Ecrit la representation d'un Block b dans un fichier nom*/
 int ecrire_block(char* nom, Block* b){
     FILE* f;
     f=fopen(nom,"w");
@@ -34,6 +35,7 @@ int ecrire_block(char* nom, Block* b){
     return 1;
 }
 
+/*Alloue et initialise les champs d'une structure Block*/
 Block * create_Block(Key *author, CellProtected *votes, unsigned char *hash, unsigned char *previous_hash, int nonce, int nb_votes){
     Block* b =(Block*)malloc(sizeof(Block));
     if(!b){
@@ -48,6 +50,7 @@ Block * create_Block(Key *author, CellProtected *votes, unsigned char *hash, uns
     return b;
 }
 
+/*Lit la representation d'un Block depuis un fichier nom. Alloue, initialise et retourne le block*/
 Block* lire_block(char* nom){
     FILE* f = fopen(nom,"r");
     if (f==NULL){
@@ -198,6 +201,7 @@ Block* lire_block(char* nom){
     return b;
 }
 
+/*Concatenation de deux chaines de caracteres s1 et s2. s1 est liberee*/
 char *strjoin(char *s1, char const *s2)
 {
 	size_t	i;
@@ -236,6 +240,7 @@ char *strjoin(char *s1, char const *s2)
 	return (ret_str);
 }
 
+/*Compte le nombre de chiffres composants un nombre (entier) positif*/
 int	nb_of_digits(int n)
 {
     int len = 0;
@@ -247,6 +252,7 @@ int	nb_of_digits(int n)
     return len;
 }
 
+/*Genere une chaine de caracteres representant un bloc*/
 char* block_to_str(Block* block){
     char *block_str;
     char* key = key_to_str(block->author);
@@ -298,7 +304,7 @@ char* block_to_str(Block* block){
 
 }
 
-//question 7.5
+/*Retourne la valeur hachee obtenue par l’algorithme SHA256 d'une chaine de caracteres message*/
 unsigned char* crypt_to_sha256 (char* message){
     unsigned char *d = SHA256((unsigned char *)message, strlen(message), 0);
     unsigned char *hashed_value_of_block = malloc(sizeof(unsigned char) * SHA256_DIGEST_LENGTH + 1); //alloue notre propre valeur hachee pour eviter des problemes
@@ -309,7 +315,7 @@ unsigned char* crypt_to_sha256 (char* message){
     return hashed_value_of_block;
 }
 
-//question 7.9
+/*Supprime un bloc, mais ne libere pas son author et les protected de sa liste de votes*/
 void delete_block(Block *b){
     if (b != NULL){
         CellProtected* tmp;
@@ -336,6 +342,7 @@ int d_succesive_zeros(unsigned char *hashed_value_of_block, int d){
     return 1;
 }
 
+/*Incremente la valeur nonce du bloc B jusqu'a ce que la valeur hachee du bloc commence par d zeros successifs*/
 void compute_proof_of_work(Block *B, int d){
     char *block_str = block_to_str(B);
     if (!block_str)
@@ -368,7 +375,7 @@ void compute_proof_of_work(Block *B, int d){
     free(block_str);
 }
 
-
+/*Affiche la valeur hachee (donnee en hexadecimale) d'un bloc*/
 void print_hash_sha256(unsigned char *hashed_value_of_block){
     for(int i=0; i < SHA256_DIGEST_LENGTH; i++){
         printf("%02x",hashed_value_of_block[i]);
@@ -376,6 +383,7 @@ void print_hash_sha256(unsigned char *hashed_value_of_block){
     putchar('\n');
 }
 
+/*Verifie qu'un bloc est valide : sa valeur hachee commence bien par d zeros successifs*/
 int verify_block(Block *b, int d){
     char *block_str = block_to_str(b);
     if (!block_str)
