@@ -208,7 +208,7 @@ Protected *duplicate_protected(Protected * pr){
         free(s->content);
         return NULL;
     }
-    
+
     Protected * ret_pr = init_protected(k, mess, s);
     if (!ret_pr){
         free(k);
@@ -227,7 +227,6 @@ CellProtected* fusion_liste_protected(CellProtected* list1, CellProtected* list2
     Protected * pr;
     CellProtected *cpr;
     while(list2 != NULL){
-        printf("%s\n", list2->data->mess);
         tmp = list2;
         list2 = list2->next;
 

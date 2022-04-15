@@ -308,6 +308,8 @@ char* block_to_str(Block* block){
 unsigned char* crypt_to_sha256 (char* message){
     unsigned char *d = SHA256((unsigned char *)message, strlen(message), 0);
     unsigned char *hashed_value_of_block = malloc(sizeof(unsigned char) * SHA256_DIGEST_LENGTH + 1); //alloue notre propre valeur hachee pour eviter des problemes
+    if (!hashed_value_of_block)
+        return NULL;
     int i;
     for (i = 0; i < SHA256_DIGEST_LENGTH; i++)
         hashed_value_of_block[i] = d[i];
@@ -409,108 +411,3 @@ int verify_block(Block *b, int d){
     free(hashed_value_of_block);
     return res;
 }
-
-
-/*
-int main(){
-    //Tests create_Block et ecricre_block
-    Key *k = malloc(sizeof(Key));
-    if (!k)
-        return 1;
-    k->n = 123;
-    k->val = 456;
-
-    CellProtected *lcp = read_protected("declarations.txt");
-	if (!lcp){
-		free(k);
-		return 1;
-	}
-    unsigned char *h = malloc(sizeof(unsigned char) * 3);
-    if (!h){
-        free(k);
-        delete_list_cell(lcp);
-        return 1;
-    }
-    h[0] = 'h'; 
-    h[1] = '1'; 
-    h[2] = '\0'; 
-    unsigned char *prev_h = malloc(sizeof(unsigned char) * 3);
-    if (!prev_h){
-        free(k);
-        delete_list_cell(lcp);
-        free(h);
-        return 1;
-    }
-    prev_h[0] = 'h'; 
-    prev_h[1] = '0'; 
-    prev_h[2] = '\0'; 
-
-
-    CellProtected* tmp = lcp;
-	int nb_votes = 0;
-	while(tmp){ //calcule la taile de la liste
-		nb_votes++;
-		tmp = tmp->next;
-	}
-
-    Block *b = create_Block(k, lcp, h, prev_h, 0, nb_votes);
-    if (!b){
-        free(k);
-        delete_list_cell(lcp);
-        free(h);
-        free(prev_h);
-        return 1;
-    }
-
-    if (ecrire_block("blocks.txt", b) == 0){
-        free(b->author);
-        delete_list_cell(b->votes);
-        b->votes = NULL;
-        delete_block(b);
-        return 1;
-    }
-
-    full_delete_block(b);
-
-    //Tests lire_block
-    Block *b2 = lire_block("blocks.txt");
-    if (!b2)
-        return 1;
-
-    if (ecrire_block("blocks.txt", b2) == 0){ //doit ecrire la meme chose que b dans blocks.txt
-        free(b2->author);
-        delete_list_cell(b2->votes);
-        b2->votes = NULL;
-        delete_block(b2);
-        return 1;
-    }
-
-    //Tests block_to_str
-    char *block_str = block_to_str(b2);
-    printf("block_str=\n%s\n", block_str);
-
-    free(block_str);
-
-    //Tests crypt_to_sha256
-    unsigned char *hashed_value_of_block = crypt_to_sha256("Rosetta code");
-    printf("\n'Rosetta code' crypté en sha256 =\n");
-    print_hash_sha256(hashed_value_of_block);
-
-    free(hashed_value_of_block);
-
-    //Tests compute_proof_of_work
-    int d = 2; // nombre de zeros demande
-    compute_proof_of_work(b2, d);
-    printf("\nPour une proof of work avec %d zéros\n", d);
-    printf("nonce=%d\n", b2->nonce);
-    printf("valeur hachée du bloc=\n");
-    print_hash_sha256(b2->hash);
-
-    //Tests verify_block
-    printf("\nverify_block sur block valide=%d\n", verify_block(b2, d));
-    b2->nonce++; //modifie une champ du block, ce qui compromet son integrite
-    printf("verify_block sur block modifié=%d\n", verify_block(b2, d));
-
-    full_delete_block(b2);
-}
-*/
