@@ -14,39 +14,52 @@ CellTree* create_node(Block* b){
     return T;
 }
 
+/*Retourne l'entier max entre a et b*/
+int max(int a, int b){
+    if (a >= b)
+        return a;
+    return b;
+}
+
 int update_height(CellTree* father, CellTree* child){
-    if(!father){
+    if(!father || !child){
         return -1;
     }
-    if(!child){
-        return -1;
-    }
-    if(father->height==(child->height)+1){
+    int previous_height = father->height;
+
+    father->height = max(father->height, child->height + 1); //max entre hauteur courante et celle du child + 1
+
+    if(father->height==previous_height) //si la hauteur n'a pas changee
         return 0;
-    }else{
-        father->height=(child->height)+1;
+    else //si elle a change
         return 1;
-    }
 }
 
 void add_child(CellTree* father, CellTree* child){
-    if(!father){
-        return;
+    if(!father || !child){
+        return ;
     }
-    if(!child){
-        return;
+
+    //Insertion du child
+    if (father->firstChild == NULL){ //si le pere n'a pas deja un fils
+        father->firstChild = child;
     }
-    father->height=child->height+1;
-    father->firstChild=child;
-    child->father=father;
-    CellTree* Grandpa;
-    CellTree* fatherbis;
-    fatherbis=father;
-    Grandpa = father->father;
-    while(Grandpa!=NULL){
-        Grandpa->height=(fatherbis->height)+1;
-        fatherbis=Grandpa;
-        Grandpa=Grandpa->father;
+    else{ //si le pere a deja un fils (ou plus d'un fils)
+        CellTree * brother = father->firstChild;
+
+        while (brother->nextBro != NULL){ //on cherche le frere qui n'a pas encore de frere
+            brother = brother->nextBro;
+        }
+        brother->nextBro = child; //insere le child comme le dernier frere parmi les fils du father
+    }
+
+    //Mise a jour des hauteur de tous les ascendants
+    CellTree *ascendant = father;
+    CellTree *descendant = child;
+    while (ascendant != NULL){ //remonte tous les ascendants
+        update_height(ascendant, descendant); //maj la hauteur
+        descendant = ascendant;
+        ascendant = ascendant->father;
     }
 }
 

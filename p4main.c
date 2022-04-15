@@ -4,8 +4,8 @@
 
 
 
-/*int main(){
-    //Tests create_Block et ecricre_block
+int main(){
+    //Creation d'un bloc 1
     Key *k = malloc(sizeof(Key));
     if (!k)
         return 1;
@@ -54,6 +54,7 @@
     }
 
     /////////
+    //Creation d'un bloc 2
 
     Key *k2 = malloc(sizeof(Key));
     if (!k2)
@@ -103,6 +104,7 @@
     }
 
     //////////
+    //Creation d'un bloc 3
 
     Key *k3 = malloc(sizeof(Key));
     if (!k3)
@@ -150,7 +152,7 @@
         free(h3);
         return 1;
     }
-    
+    ////////
 
     CellTree* tree = create_node(b);
     CellTree* tree2 = create_node(b2);
@@ -169,4 +171,4 @@
 
 
  
-}*/
+}
