@@ -1,6 +1,6 @@
 #include "p4exo8.h"
 
-
+/*Crée et initialise un noeud dont la hauteur vaut 0*/
 CellTree* create_node(Block* b){
     CellTree* T = (CellTree*)malloc(sizeof(CellTree));
     if(!T){
@@ -21,6 +21,7 @@ int max(int a, int b){
     return b;
 }
 
+/*Met a jour la hauteur du noeud father selon la hauteur d'un fils child. Retourne 1 si la hauteur du pere a ete modifiee, 0 sinon*/
 int update_height(CellTree* father, CellTree* child){
     if(!father || !child){
         return -1;
@@ -34,6 +35,7 @@ int update_height(CellTree* father, CellTree* child){
         return 1;
 }
 
+/*Ajoute un fils child au noeud father, met a jour la hauteur de tous les ascendants*/
 void add_child(CellTree* father, CellTree* child){
     if(!father || !child){
         return ;
@@ -58,34 +60,35 @@ void add_child(CellTree* father, CellTree* child){
     CellTree *ascendant = father;
     CellTree *descendant = child;
     while (ascendant != NULL){ //remonte tous les ascendants
-        update_height(ascendant, descendant); //maj la hauteur
+        if (update_height(ascendant, descendant) == 0) //maj la hauteur
+            return; //termine prematurement la boucle si la hauteur de l'ascendant n'a pas eu besoin d'etre modifiee
         descendant = ascendant;
         ascendant = ascendant->father;
     }
 }
 
-//la racine
-void print_tree(CellTree* arbre){
-    CellTree* copie;
-    copie=arbre;
-    if(!arbre){
-        printf("le noeud est vide");
-        printf("\n");
-    }else
-    {
-        if(arbre->father==NULL){
-            printf("%d,%s\n",copie->height,copie->block->hash);
-            printf("voici mon fils\n");
-            print_tree(copie->firstChild);
-        }else{
-            printf("%d,%s\n",copie->height,copie->block->hash);
-            printf("voici mon frere\n");
-            print_tree(copie->nextBro);
-            printf("voici mon fils\n");
-            print_tree(copie->firstChild);
-        }
-    }
-}
+// //la racine
+// void print_tree(CellTree* arbre){
+//     CellTree* copie;
+//     copie=arbre;
+//     if(!arbre){
+//         printf("le noeud est vide");
+//         printf("\n");
+//     }else
+//     {
+//         if(arbre->father==NULL){
+//             printf("%d,%s\n",copie->height,copie->block->hash);
+//             printf("voici mon fils\n");
+//             print_tree(copie->firstChild);
+//         }else{
+//             printf("%d,%s\n",copie->height,copie->block->hash);
+//             printf("voici mon frere\n");
+//             print_tree(copie->nextBro);
+//             printf("voici mon fils\n");
+//             print_tree(copie->firstChild);
+//         }
+//     }
+// }
 
 /*Affiche un representation 2D d'un arbre sur la console*/
 void print_tree2D(CellTree *cell, int spaces){
@@ -123,18 +126,19 @@ void delete_tree(CellTree* tree){
     }
 }
 
-
+/*Renvoie le noeud fils de cell avec la plus grand hauteur*/
 CellTree* highest_child(CellTree* cell){
     CellTree* high;
-    CellTree* tmp=cell->firstChild->nextBro;
+    CellTree* brother;
     if(cell){
         if(cell->firstChild!=NULL){
-            high=cell->firstChild;
-            while(tmp){
-                if(high->height<tmp->height){
-                    high=tmp;
+            high = cell->firstChild;
+            brother = cell->firstChild->nextBro;
+            while(brother){
+                if(high->height < brother->height){
+                    high = brother;
                 }
-            tmp=tmp->nextBro;
+            brother = brother->nextBro;
             }
             return high;
         }

@@ -333,6 +333,17 @@ void delete_block(Block *b){
     }
 }
 
+/*Supprime un bloc completement*/
+void full_delete_block(Block *b){
+    if (b != NULL){
+        delete_list_cell(b->votes);
+        free(b->author);
+        free(b->hash);
+        free(b->previous_hash);
+        free(b);
+    }
+}
+
 /*Teste si la valeur hachee commence par d zeros successifs*/
 int d_succesive_zeros(unsigned char *hashed_value_of_block, int d){
     for(int i=0; i < d; i++){
@@ -459,10 +470,7 @@ int main(){
         return 1;
     }
 
-    free(b->author);
-    delete_list_cell(b->votes);
-    b->votes = NULL;
-    delete_block(b);
+    full_delete_block(b);
 
     //Tests lire_block
     Block *b2 = lire_block("blocks.txt");
@@ -503,9 +511,6 @@ int main(){
     b2->nonce++; //modifie une champ du block, ce qui compromet son integrite
     printf("verify_block sur block modifié=%d\n", verify_block(b2, d));
 
-    free(b2->author);
-    delete_list_cell(b2->votes);
-    b2->votes = NULL;
-    delete_block(b2);
+    full_delete_block(b2);
 }
 */
