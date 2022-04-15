@@ -109,7 +109,7 @@ void print_tree2D(CellTree *cell, int spaces){
 }
 
 
-//Libere un noeud de l'arbre
+/*Libere un noeud de l'arbre en appelant delete_block*/
 void delete_node(CellTree* node){
     if(node){
         delete_block(node->block);
@@ -117,12 +117,29 @@ void delete_node(CellTree* node){
     }
 }
 
-//Libere l'arbre
+/*Libere l'arbre avec delete_block*/
 void delete_tree(CellTree* tree){
     if(tree){
         delete_tree(tree->firstChild);
         delete_tree(tree->nextBro);
         delete_node(tree);
+    }
+}
+
+/*Libere un noeud de l'arbre en appelant full_delete_block*/
+void full_delete_node(CellTree* node){
+    if(node){
+        full_delete_block(node->block);
+        free(node);
+    }
+}
+
+/*Libere l'arbre avec full_delete_block*/
+void full_delete_tree(CellTree* tree){
+    if(tree){
+        full_delete_tree(tree->firstChild);
+        full_delete_tree(tree->nextBro);
+        full_delete_node(tree);
     }
 }
 
@@ -162,39 +179,95 @@ CellTree* last_node(CellTree* tree){
     return high;
 }
 
-CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2){
-    CellProtected* listfusion = (CellProtected*)malloc(1024*sizeof(CellProtected));
-    if(!listfusion){
+/*Alloue et initialise une copie du protected pr*/
+Protected *duplicate_protected(Protected * pr){
+    Key *k = (Key*)malloc(sizeof(Key));
+    if (!k)
+        return NULL;
+    init_key(k,pr->pKey->val, pr->pKey->n);
+
+    Signature *s = (Signature*)malloc(sizeof(Signature));
+    if (!s){
+        free(k);
         return NULL;
     }
-    if(!list1){
-        return list2;
+    s->size = pr->sgn->size;
+    s->content = (long *)malloc(sizeof(long) * s->size);
+    if (!s->content){
+        free(k);
+        free(s);
+        return NULL;
     }
-    if(!list2){
-        return list1;
+    for (int i = 0; i < s->size ; i++) //recopie le tab de long
+        s->content[i] = pr->sgn->content[i];
+    
+    char *mess = strdup(pr->mess);
+    if (!mess){
+        free(k);
+        free(s);
+        free(s->content);
+        return NULL;
     }
-    while(list1!=NULL){
-        listfusion->data=list1->data;
-        list1=list1->next;
-        listfusion=listfusion->next;
+    
+    Protected * ret_pr = init_protected(k, mess, s);
+    if (!ret_pr){
+        free(k);
+        free(s);
+        free(s->content);
+        free(mess);
+        return NULL;
     }
-    while(list2!=NULL){
-        listfusion->data=list2->data;
-        list2=list2->next;
-        listfusion=listfusion->next;
-    }
-    return listfusion;
+    return ret_pr;
 }
 
-CellProtected* fusion_arbre(CellTree* tree){
-    CellTree* high = highest_child(tree);
-    CellProtected* liste_vote;
-    if(!high){
+/*Fusionne deux listes chainees de declarations signees. Les elements de la list2 sont inseres dans la list1.
+Retourne le pointeur vers la nouvelle tete de list1*/
+CellProtected* fusion_liste_protected(CellProtected* list1, CellProtected* list2){
+    CellProtected *tmp;
+    Protected * pr;
+    CellProtected *cpr;
+    while(list2 != NULL){
+        printf("%s\n", list2->data->mess);
+        tmp = list2;
+        list2 = list2->next;
+
+        //la cell protected est dupliquee pour pouvoir liberer les deux separement
+        pr = duplicate_protected(tmp->data); 
+        if (!pr){
+            delete_list_cell(list1);
+            return NULL;
+        }
+        cpr = create_cell_protected(pr);
+        if (!cpr){
+            delete_protected(pr);
+            delete_list_cell(list1);
+            return NULL;
+        }
+        add_cellProtected_to_front(&list1, cpr); //ajout de la cell en tete de list1
+    }
+    return list1;
+}
+
+/*Retourne la liste obtenue par fusion des listes chainees de declarations contenues dans les blocs de la plus longue chaine
+de l'arbre tree*/
+CellProtected* fusion_votes_arbre(CellTree* tree){
+    if (tree == NULL) //arbre vide
         return NULL;
+    
+    CellProtected* liste_votes = NULL; 
+    liste_votes = fusion_liste_protected(liste_votes, tree->block->votes); //prend en compte les votes de la racine
+    if (!liste_votes)
+        return NULL;
+    
+    CellTree* high = highest_child(tree);
+    
+    while(high){
+    
+        liste_votes = fusion_liste_protected(liste_votes, high->block->votes);
+        if (!liste_votes)
+            return NULL;
+
+        high = highest_child(high);
     }
-    while(high->firstChild!=NULL){
-        liste_vote=fusion_liste_protected(liste_vote,high->firstChild->block->votes);
-        high=high->firstChild;
-    }
-    return liste_vote;
+    return liste_votes;
 }

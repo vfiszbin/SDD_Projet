@@ -8,8 +8,8 @@ void init_key(Key* key, long val, long n ){
         key->val=val;
         key->n=n;
     }else{
-        printf ("key n'est pas allouée");
-        exit(1);
+        printf("key n'est pas allouée");
+        return;
     }
 }
 

@@ -84,10 +84,43 @@ int main(){
 
     //Creation des noeuds
     CellTree* node1 = create_node(b1);
+    if (!node1){
+        full_delete_block(b1);
+        full_delete_block(b2);
+        full_delete_block(b3);
+        full_delete_block(b4);
+        return 1;
+    }
     CellTree* node2 = create_node(b2);
+    if (!node2){
+        full_delete_block(b1);
+        full_delete_block(b2);
+        full_delete_block(b3);
+        full_delete_block(b4);
+        full_delete_node(node1);
+        return 1;
+    }
     CellTree* node3 = create_node(b3);
+    if (!node3){
+        full_delete_block(b1);
+        full_delete_block(b2);
+        full_delete_block(b3);
+        full_delete_block(b4);
+        full_delete_node(node1);
+        full_delete_node(node2);
+        return 1;
+    }
     CellTree* node4 = create_node(b4);
-
+    if (!node4){
+        full_delete_block(b1);
+        full_delete_block(b2);
+        full_delete_block(b3);
+        full_delete_block(b4);
+        full_delete_node(node1);
+        full_delete_node(node2);
+        full_delete_node(node3);
+        return 1;
+    }
 
     //Tests add_child et print_tree2D
     add_child(node1,node2);
@@ -101,7 +134,22 @@ int main(){
     printf("\nlast_node=%s\n", last_node(node1)->block->hash);
     
 
-    delete_tree(node1);
+    //Tests fusion_liste_protected et fusion_votes_arbre
+    CellProtected *liste_votes = fusion_votes_arbre(node1);
+    if (!liste_votes){
+        full_delete_block(b1);
+        full_delete_block(b2);
+        full_delete_block(b3);
+        full_delete_block(b4);
+        full_delete_tree(node1);
+        return 1;
+    }
+    printf("\nListe des votes de la plus longue branche de l'arbre :\n");
+    print_list_cell_protected(liste_votes);
+
+    delete_list_cell(liste_votes);
+
+    full_delete_tree(node1);
 
     return 0;
 
