@@ -155,7 +155,7 @@ CellProtected* read_protected(char *filename){
 			fclose(f);
 			return NULL;
 		}
-	c = create_cell_protected(pr);
+		c = create_cell_protected(pr);
 		if (!c){
 			free(pr);
 			delete_list_cell(lcp);
