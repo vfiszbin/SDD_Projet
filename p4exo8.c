@@ -26,7 +26,6 @@ int update_height(CellTree* father, CellTree* child){
         return -1;
     }
     int previous_height = father->height;
-
     father->height = max(father->height, child->height + 1); //max entre hauteur courante et celle du child + 1
 
     if(father->height==previous_height) //si la hauteur n'a pas changee
@@ -40,6 +39,8 @@ void add_child(CellTree* father, CellTree* child){
         return ;
     }
 
+    child->father = father; //assigne son pere au fils
+
     //Insertion du child
     if (father->firstChild == NULL){ //si le pere n'a pas deja un fils
         father->firstChild = child;
@@ -47,13 +48,13 @@ void add_child(CellTree* father, CellTree* child){
     else{ //si le pere a deja un fils (ou plus d'un fils)
         CellTree * brother = father->firstChild;
 
-        while (brother->nextBro != NULL){ //on cherche le frere qui n'a pas encore de frere
+        while (brother->nextBro != NULL){ //on cherche le frere qui n'a pas encore de frere suivant
             brother = brother->nextBro;
         }
         brother->nextBro = child; //insere le child comme le dernier frere parmi les fils du father
     }
 
-    //Mise a jour des hauteur de tous les ascendants
+    //Mise a jour des hauteurs de tous les ascendants
     CellTree *ascendant = father;
     CellTree *descendant = child;
     while (ascendant != NULL){ //remonte tous les ascendants
@@ -86,6 +87,26 @@ void print_tree(CellTree* arbre){
     }
     
 }
+
+/*Affiche un representation 2D d'un arbre sur la console*/
+void print_tree2D(CellTree *cell, int spaces){
+    if (cell == NULL)
+        return;
+ 
+    spaces += 10; //augmente distance entre les noeuds
+    
+    //Parcours infixe (inversé) (droite, racine, gauche) de l'arbre
+    print_tree2D(cell->nextBro, spaces); //affiche d'abord les fils droits
+ 
+    printf("\n");
+    for (int i = 10; i < spaces; i++)
+        printf(" ");
+    printf("(%d,%s)\n", cell->height ,cell->block->hash);
+ 
+    print_tree2D(cell->firstChild, spaces); //affiche ensuite les fils gauche
+}
+
+
 //libere les noeuds de l'arbre
 void delete_node(CellTree* node){
     if(node){

@@ -158,12 +158,21 @@ int main(){
     CellTree* tree2 = create_node(b2);
     CellTree* tree3 = create_node(b3);
 
-    print_tree(tree);
-    print_tree(tree2);
-    print_tree(tree3);
+    // print_tree(tree);
+    // print_tree(tree2);
+    // print_tree(tree3);
     add_child(tree,tree2);
-    tree2->nextBro=tree3;
-    print_tree(tree);
+    add_child(tree2,tree3);
+    // tree->nextBro=tree3;
+    // print_tree(tree);
+
+    // printf("racine=%s\n", tree->block->hash);
+    // printf("firstChild=%s\n", tree->firstChild->block->hash);
+    // printf("nextBro=%s\n", tree->firstChild->nextBro->block->hash);
+    // printf("firstChildOfFirstChild=%s\n", tree->firstChild->firstChild->block->hash);
+
+
+    print_tree2D(tree, 0);
 
     
 

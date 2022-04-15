@@ -19,4 +19,7 @@ CellTree* highest_child(CellTree* cell);
 CellTree* last_node(CellTree* tree);
 CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2);
 CellProtected* fusion_arbre(CellTree* tree);
+
+void print_tree2D(CellTree *cell, int spaces);
+
 #endif
