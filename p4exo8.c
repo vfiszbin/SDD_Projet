@@ -147,16 +147,19 @@ CellTree* highest_child(CellTree* cell){
     return NULL;
 }
 
+/*Renvoie le dernier noeud de la chaine avec la plus grand hauteur dans l'arbre tree*/
 CellTree* last_node(CellTree* tree){
-    CellTree* high=highest_child(tree);
-    CellTree* tmp=high->firstChild;
-    if(high!=NULL){
-        while(tmp!=NULL){
-            tmp=tmp->firstChild;
-        }
-        return tmp;
+    if (tree == NULL) //arbre vide
+        return NULL;
+
+    CellTree* high = highest_child(tree);
+    if (high == NULL) //si le noeud n'a aucun fils il est lui meme le dernier noeud
+        return tree;
+
+    while (high->firstChild || high->nextBro){ //tant que le noeud a un fils ou un frere, il n'est pas 
+        high = highest_child(high);
     }
-    return NULL;
+    return high;
 }
 
 CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2){
@@ -173,7 +176,7 @@ CellProtected* fusion_liste_protected(CellProtected* list1,CellProtected* list2)
     while(list1!=NULL){
         listfusion->data=list1->data;
         list1=list1->next;
-        listfusion=listfusion->next;       
+        listfusion=listfusion->next;
     }
     while(list2!=NULL){
         listfusion->data=list2->data;

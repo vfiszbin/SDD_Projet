@@ -96,8 +96,10 @@ int main(){
 
     print_tree2D(node1, 0);
 
-    //Tests highest_child
+    //Tests highest_child et last_node
     printf("\nhighest_child=%s\n", highest_child(node1)->block->hash);
+    printf("\nlast_node=%s\n", last_node(node1)->block->hash);
+    
 
     delete_tree(node1);
 
