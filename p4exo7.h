@@ -21,6 +21,7 @@ Block* lire_block(char* nom);
 char* block_to_str(Block* block);
 unsigned char* crypteensha256 (char* message);
 void delete_block(Block *b);
+void full_delete_block(Block *b);
 
 
 #endif
