@@ -85,7 +85,6 @@ void print_tree(CellTree* arbre){
             print_tree(copie->firstChild);
         }
     }
-    
 }
 
 /*Affiche un representation 2D d'un arbre sur la console*/
@@ -107,14 +106,20 @@ void print_tree2D(CellTree *cell, int spaces){
 }
 
 
-//libere les noeuds de l'arbre
+//Libere un noeud de l'arbre
 void delete_node(CellTree* node){
     if(node){
         delete_block(node->block);
-        delete_node(node->father);
-        delete_node(node->nextBro);
-        delete_node(node->firstChild);
         free(node);
+    }
+}
+
+//Libere l'arbre
+void delete_tree(CellTree* tree){
+    if(tree){
+        delete_tree(tree->firstChild);
+        delete_tree(tree->nextBro);
+        delete_node(tree);
     }
 }
 

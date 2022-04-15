@@ -154,15 +154,15 @@ int main(){
     }
     ////////
 
-    CellTree* tree = create_node(b);
-    CellTree* tree2 = create_node(b2);
-    CellTree* tree3 = create_node(b3);
+    CellTree* node1 = create_node(b);
+    CellTree* node2 = create_node(b2);
+    CellTree* node3 = create_node(b3);
 
     // print_tree(tree);
     // print_tree(tree2);
     // print_tree(tree3);
-    add_child(tree,tree2);
-    add_child(tree2,tree3);
+    add_child(node1,node2);
+    add_child(node2,node3);
     // tree->nextBro=tree3;
     // print_tree(tree);
 
@@ -172,9 +172,9 @@ int main(){
     // printf("firstChildOfFirstChild=%s\n", tree->firstChild->firstChild->block->hash);
 
 
-    print_tree2D(tree, 0);
+    print_tree2D(node1, 0);
 
-    
+    delete_tree(node1);
 
     return 0;
 
