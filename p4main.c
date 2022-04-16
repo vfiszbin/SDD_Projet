@@ -236,18 +236,23 @@ int main(){
     printf("\n---TESTS EXERCICE 9---\n");
     submit_vote(b1->votes->data);
 
+
     CellTree * test_tree = NULL;
     //Cree un auteur
     Key *test_k = malloc(sizeof(Key));
     if (!test_k){
         full_delete_tree(node1);
-    }
         return 1;
+    }
+        
     test_k->n = 123;
     test_k->val = 456;
-    create_block(test_tree, test_k, 2);
+    
+ 
 
+    create_block(test_tree, test_k, 2); //Auteur supprimer dans la fonction en meme temps que son block
 
+    
     full_delete_tree(node1);
 
     return 0;

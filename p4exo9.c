@@ -88,3 +88,6 @@ void create_block(CellTree* tree, Key* author, int d){
     full_delete_block(b);
 }
 
+void add_block(int d, char* name){
+    
+}

@@ -140,6 +140,7 @@ void full_delete_node(CellTree* node){
 
 /*Libere l'arbre avec full_delete_block*/
 void full_delete_tree(CellTree* tree){
+
     if(tree){
         full_delete_tree(tree->firstChild);
         full_delete_tree(tree->nextBro);
