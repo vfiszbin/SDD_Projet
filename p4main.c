@@ -254,6 +254,12 @@ int main(){
     
     add_block(2, "test_block");
     
+    CellTree *blockchain_tree = read_tree();
+    if (!blockchain_tree)
+        return 1;
+    print_tree2D(blockchain_tree, 0);
+
+    full_delete_tree(blockchain_tree);
 
     return 0;
 

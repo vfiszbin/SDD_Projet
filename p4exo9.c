@@ -102,7 +102,6 @@ void add_block(int d, char* name){
             full_delete_block(b);
             return;
         }
-        printf("%s\n",filename);
         if (ecrire_block(filename, b) == 0){
             full_delete_block(b);
             free(filename);
@@ -112,4 +111,113 @@ void add_block(int d, char* name){
     }
     full_delete_block(b);
     remove("Pending_block");
+}
+
+/*Retourne 0 si deux chaine sont identique, la difference des valeurs ascii des premiers caracteres non identiques sinon*/
+int strcmp_unsigned(const unsigned char * s1, const unsigned char * s2){
+    if (s1 == NULL || s2 == NULL){
+        return 1;
+    }
+	int i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return (s1[i] - s2[i]);
+}
+
+
+/*Lit tous les blos du repertoire Blockchain et retourne l'arbre correspondant a ces blocs*/
+CellTree* read_tree(){
+    DIR *rep = opendir("./Blockchain/");
+	if (rep != NULL){
+		struct	dirent	* dir;
+        int nb_blocks = 0;
+
+        //calcul du nombre de block dans Blockchain
+		while ((dir = readdir(rep))){
+			if (strcmp(dir->d_name, ".") != 0 && strcmp (dir->d_name, "..") != 0){
+				nb_blocks++;
+			}
+		}
+		closedir(rep);
+
+        //allocation du tableau de blocks
+        CellTree **T = malloc(sizeof(CellTree*) * nb_blocks);
+        if( !T){
+            closedir(rep);
+            return NULL;
+        }
+
+        //remplissage du tableau de noeuds T
+        Block * b;
+        int i = 0;
+        int j;
+        rep = opendir("./Blockchain/");
+        if (!rep){
+            return NULL;
+        }
+        while ((dir = readdir(rep))){
+			if (strcmp(dir->d_name, ".") != 0 && strcmp (dir->d_name, "..") != 0){
+                
+                char *filename = strjoin("Blockchain/", dir->d_name, 0);
+                if (!filename){
+                    for (j = 0; j < i; j++)
+                        full_delete_node(T[j]);
+                    free(T);
+                    closedir(rep);
+                    return NULL;
+                }
+
+                b = lire_block(filename);
+                if (!b){
+                    for (j = 0; j < i; j++)
+                        full_delete_node(T[j]);
+                    free(T);
+                    free(filename);
+                    closedir(rep);
+                    return NULL;
+                }
+                free(filename);
+                T[i] = create_node(b);
+    
+                if (!T[i]){
+                    for (j = 0; j < i; j++)
+                        full_delete_node(T[j]);
+                    full_delete_block(b);
+                    free(T);
+                    closedir(rep);
+                    return NULL;
+                }
+                i++;
+			}
+		}
+        closedir(rep);
+
+        //recherche des fils de chaque noeud
+        for(i = 0; i < nb_blocks; i++){
+            for (j = 0; j < nb_blocks; j++){
+                if (strcmp_unsigned(T[i]->block->hash, T[j]->block->previous_hash) == 0){
+                    add_child(T[i], T[j]);
+                }
+            }
+        }
+
+        //recherche de la racine
+        CellTree *root;
+        for(i = 0; i < nb_blocks; i++){
+            if (T[i]->block->previous_hash == NULL){
+                root = T[i];
+                free(T); //libere le tableau
+                return root;
+            }
+        }
+
+        //si on a pas trouve de racine l'arbre est invalide
+        for(i = 0; i < nb_blocks; i++){
+            full_delete_node(T[i]);
+        }
+        free(T);
+        return NULL;
+
+	}
+    return NULL;
 }
