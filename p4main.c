@@ -236,6 +236,7 @@ int main(){
     printf("\n---TESTS EXERCICE 9---\n");
     submit_vote(b1->votes->data);
 
+    full_delete_tree(node1); //supprime l'entierete de l'arbre
 
     CellTree * test_tree = NULL;
     //Cree un auteur
@@ -248,12 +249,11 @@ int main(){
     test_k->n = 123;
     test_k->val = 456;
     
- 
 
     create_block(test_tree, test_k, 2); //Auteur supprimer dans la fonction en meme temps que son block
-
     
-    full_delete_tree(node1);
+    add_block(2, "test_block");
+    
 
     return 0;
 

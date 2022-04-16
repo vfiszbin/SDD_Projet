@@ -88,6 +88,28 @@ void create_block(CellTree* tree, Key* author, int d){
     full_delete_block(b);
 }
 
+
+/*Verifie que le bloc dans Pending_block est valide. Si oui ecrit ce bloc dans un fichier name
+dans le repertoire Blockchain. Pending_block est supprime*/
 void add_block(int d, char* name){
-    
+    Block * b = lire_block("Pending_block");
+    if (!b){
+        return;
+    }
+    if (verify_block(b, d) == 1){ //si le bloc est valide
+        char *filename = strjoin("Blockchain/", name, 0);
+        if (!filename){
+            full_delete_block(b);
+            return;
+        }
+        printf("%s\n",filename);
+        if (ecrire_block(filename, b) == 0){
+            full_delete_block(b);
+            free(filename);
+            return;
+        } 
+        free(filename);
+    }
+    full_delete_block(b);
+    remove("Pending_block");
 }

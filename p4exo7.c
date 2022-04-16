@@ -211,9 +211,8 @@ Block* lire_block(char* nom){
     return b;
 }
 
-/*Concatenation de deux chaines de caracteres s1 et s2. s1 est liberee*/
-char *strjoin(char *s1, char const *s2)
-{
+/*Concatenation de deux chaines de caracteres s1 et s2. s1 est liberee si free_s1 ne vaut pas 0*/
+char *strjoin(char *s1, char const *s2, int free_s1){
 	size_t	i;
 	size_t	j;
 	char	*ret_str;
@@ -234,9 +233,11 @@ char *strjoin(char *s1, char const *s2)
 		i++;
 	}
 
-    //place un retour a la ligne entre les chaines
-    ret_str[i] = '\n';
-    i++;
+    if (free_s1){ //si on free s1 c'est que strjoin est utilisee pour bloc_to_str
+        //place un retour a la ligne entre les chaines
+        ret_str[i] = '\n';
+        i++;
+    }
 
 	j = -1;
 	while (s2[++j])
@@ -246,7 +247,9 @@ char *strjoin(char *s1, char const *s2)
 	}
 	ret_str[i] = '\0';
 
-    free(s1); //libere la premiere chaine
+    if (free_s1){
+        free(s1); //libere la premiere chaine
+    }
 	return (ret_str);
 }
 
@@ -276,7 +279,7 @@ char* block_to_str(Block* block){
     else  
         previous_hash = (char *)block->previous_hash;
 
-    block_str = strjoin(key, previous_hash); //key est libéré dans la fonction
+    block_str = strjoin(key, previous_hash, 1); //key est libéré dans la fonction
     if (!block_str){
         free(key);
         return NULL;
@@ -291,7 +294,7 @@ char* block_to_str(Block* block){
             free(block_str);
             return NULL;
         }
-        block_str = strjoin(block_str, pr_str); // le block_str precedent est libere dans la fonction
+        block_str = strjoin(block_str, pr_str,1); // le block_str precedent est libere dans la fonction
         if(!block_str)
         {
             free(pr_str);
@@ -310,7 +313,7 @@ char* block_to_str(Block* block){
     nonce_str[nb_char]= '\0';
 
 
-    block_str = strjoin(block_str, nonce_str);
+    block_str = strjoin(block_str, nonce_str, 1);
     if (!block_str){
         free(nonce_str);
         return NULL;
@@ -413,7 +416,7 @@ int compute_proof_of_work(Block *B, int d){
 int read_hash_sha256(char*buffer, unsigned char * dest, int len_buffer){
     int i = 0;
     int j = 0;
-    printf("\nlen_buffer=%d\n", len_buffer);
+    
     while (j < len_buffer - 1){
         // printf("\nj=%d\n", j);
         // printf("sscanf=%d\n",sscanf(buffer + j, "%02hhx", &dest[i]));
