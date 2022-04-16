@@ -6,3 +6,5 @@ a.out.dSYM
 *.o
 p?main
 *.txt
+Pending_block
+Blockchain/*
