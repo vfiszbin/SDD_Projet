@@ -47,7 +47,7 @@ int main(){
         Cell_tree* tree_valide=read_tree();
         print_tree(arbre_valide);
         Key* gagnant = compute_winner_BT(tree_valide,lck_c,lck_v,sizeC,sizeV);
-        printf("le gagnant est (%lx,%lx",key_to_str(gagnant));
+        printf("le gagnant est (%lx,%lx"),key_to_str(gagnant));
     }
     
 }
