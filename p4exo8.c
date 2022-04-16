@@ -37,7 +37,10 @@ int update_height(CellTree* father, CellTree* child){
 
 /*Ajoute un fils child au noeud father, met a jour la hauteur de tous les ascendants*/
 void add_child(CellTree* father, CellTree* child){
-    if(!father || !child){
+    if (!child)
+        return;
+    if(!father){ // arbre vide
+        father = child;
         return ;
     }
 

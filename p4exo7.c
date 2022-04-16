@@ -27,8 +27,8 @@ int ecrire_block(char* nom, Block* b){
             free(pr_str);
             vote = vote->next;
         }
-        fprintf(f, "%s\n",b->hash);
-        fprintf(f, "%s\n",b->previous_hash);
+        write_hash_sha256(f, b->hash);
+        write_hash_sha256(f, b->previous_hash);
         fprintf(f, "%d\n",b->nonce);
     }
     fclose(f);
@@ -36,7 +36,7 @@ int ecrire_block(char* nom, Block* b){
 }
 
 /*Alloue et initialise les champs d'une structure Block*/
-Block * create_Block(Key *author, CellProtected *votes, unsigned char *hash, unsigned char *previous_hash, int nonce, int nb_votes){
+Block * init_block(Key *author, CellProtected *votes, unsigned char *hash, unsigned char *previous_hash, int nonce, int nb_votes){
     Block* b =(Block*)malloc(sizeof(Block));
     if(!b){
         return NULL;
@@ -129,20 +129,28 @@ Block* lire_block(char* nom){
         fclose(f);
         return NULL;
     }
-    hash = (unsigned char*)malloc(sizeof(unsigned char) * strlen(buffer)); //alloue une chaine d'unsigned char de la bonne taille
+
+
+    int len_buffer = strlen(buffer);
+    hash = (unsigned char*)malloc(sizeof(unsigned char) * len_buffer + 1); //alloue une chaine d'unsigned char de la bonne taille
     if (!hash){
         delete_list_cell(lcp);
         free(cle);
         fclose(f);
         return NULL;
     }
-    if (sscanf(buffer,"%s",hash) != 1){
-        delete_list_cell(lcp);
-        free(cle);
-        free(hash);
-        fclose(f);
-        return NULL;
-    }
+    read_hash_sha256(buffer, hash, len_buffer);
+
+
+
+
+    // if (sscanf(buffer,"%s",hash) != 1){
+    //     delete_list_cell(lcp);
+    //     free(cle);
+    //     free(hash);
+    //     fclose(f);
+    //     return NULL;
+    // }
 
     //lit le hash du bloc precedent
     if (fgets(buffer, BUFFLEN, f) == NULL){
@@ -152,21 +160,29 @@ Block* lire_block(char* nom){
         fclose(f);
         return NULL;
     }
-    hash_precedent = (unsigned char*)malloc(sizeof(unsigned char) * strlen(buffer)); //alloue une chaine d'unsigned char de la bonne taille
-    if (!hash_precedent){
-        delete_list_cell(lcp);
-        free(cle);
-        free(hash);
-        fclose(f);
-        return NULL;
+
+    if (strcmp(buffer, "NULL\n") == 0){ //cas de la racine dont le previous_hash est NULL
+        hash_precedent = NULL;
     }
-    if (sscanf(buffer,"%s", hash_precedent) != 1){
-        delete_list_cell(lcp);
-        free(cle);
-        free(hash);
-        free(hash_precedent);
-        fclose(f);
-        return NULL;
+    else{
+        len_buffer = strlen(buffer);
+        hash_precedent = (unsigned char*)malloc(sizeof(unsigned char) * len_buffer + 1); //alloue une chaine d'unsigned char de la bonne taille
+        if (!hash_precedent){
+            delete_list_cell(lcp);
+            free(cle);
+            free(hash);
+            fclose(f);
+            return NULL;
+        }
+        read_hash_sha256(buffer, hash_precedent, len_buffer);
+        // if (sscanf(buffer,"%s", hash_precedent) != 1){
+        //     delete_list_cell(lcp);
+        //     free(cle);
+        //     free(hash);
+        //     free(hash_precedent);
+        //     fclose(f);
+        //     return NULL;
+        // }
     }
 
     //lit nonce
@@ -188,8 +204,8 @@ Block* lire_block(char* nom){
     }
 
 
-    Block *b = create_Block(cle,lcp,hash,hash_precedent,nonce, nb_votes);
-    if(!b){       
+    Block *b = init_block(cle,lcp,hash,hash_precedent,nonce, nb_votes);
+    if(!b){
         delete_list_cell(lcp);
         free(cle);
         free(hash);
@@ -259,7 +275,14 @@ char* block_to_str(Block* block){
     if (!key)
         return NULL;
 
-    block_str = strjoin(key, (char *)block->previous_hash); //key est libéré dans la fonction
+    //Recupere le pervious_hash
+    char *previous_hash;
+    if (block->previous_hash == NULL)
+        previous_hash = "0"; //le bloc racine n'a pas de bloc precedent, on donne une valeur par defaut de 0
+    else  
+        previous_hash = (char *)block->previous_hash;
+
+    block_str = strjoin(key, previous_hash); //key est libéré dans la fonction
     if (!block_str){
         free(key);
         return NULL;
@@ -330,7 +353,8 @@ void delete_block(Block *b){
         }
 
         free(b->hash);
-        free(b->previous_hash);
+        if (b->previous_hash != NULL)
+            free(b->previous_hash); 
         free(b);
     }
 }
@@ -341,7 +365,8 @@ void full_delete_block(Block *b){
         delete_list_cell(b->votes);
         free(b->author);
         free(b->hash);
-        free(b->previous_hash);
+        if (b->previous_hash != NULL)
+            free(b->previous_hash); 
         free(b);
     }
 }
@@ -356,16 +381,17 @@ int d_succesive_zeros(unsigned char *hashed_value_of_block, int d){
 }
 
 /*Incremente la valeur nonce du bloc B jusqu'a ce que la valeur hachee du bloc commence par d zeros successifs*/
-void compute_proof_of_work(Block *B, int d){
+int compute_proof_of_work(Block *B, int d){
     char *block_str = block_to_str(B);
     if (!block_str)
-        return;
-    
+        return 0;
+
     unsigned char *hashed_value_of_block = crypt_to_sha256(block_str);
     if (!hashed_value_of_block){
         free(block_str);
-        return;
+        return 0;
     }
+    
     if (B->hash != NULL)
         free(B->hash);
     B->hash = hashed_value_of_block;
@@ -375,17 +401,43 @@ void compute_proof_of_work(Block *B, int d){
         B->nonce++;
         block_str = block_to_str(B);
         if (!block_str)
-            return;
+            return 0;
 
         free(hashed_value_of_block);
         hashed_value_of_block = crypt_to_sha256(block_str);
         if (!hashed_value_of_block){
             free(block_str);
-            return;
+            return 0;
         }
         B->hash = hashed_value_of_block;
     }
     free(block_str);
+    return 1;
+}
+
+/*Lit la valeur hachee (donnee en hexadecimale) d'un bloc*/
+void read_hash_sha256(char*buffer, unsigned char * dest, int len_buffer){
+    int i = 0;
+    int j = 0;
+
+    while (j < len_buffer){
+        sscanf(buffer + j,"%02hhx", &dest[i]);
+        i++;
+        j+=2 ;
+    }
+    dest[i] = '\0';
+}
+
+/*Ecrit la valeur hachee (donnee en hexadecimale) d'un bloc*/
+void write_hash_sha256(FILE *f, unsigned char *hashed_value_of_block){
+    if (hashed_value_of_block == NULL){ //cas ou on ecrit la racine
+        fprintf(f, "NULL\n");
+        return;
+    }
+    for(int i=0; i < SHA256_DIGEST_LENGTH; i++){
+        fprintf(f, "%02x",hashed_value_of_block[i]);
+    }
+    fprintf(f, "\n");
 }
 
 /*Affiche la valeur hachee (donnee en hexadecimale) d'un bloc*/

@@ -4,7 +4,7 @@
 
 /*Cree un bloc pour pouvoir tester les fonctions de la partie 4
 nb est le numero de bloc et doit etre compris entre 1 et 9*/
-Block * create_test_block(int nb){
+Block * create_test_block(unsigned char * previous_hash, int d){
     Key *k = malloc(sizeof(Key));
     if (!k)
         return NULL;
@@ -16,26 +16,6 @@ Block * create_test_block(int nb){
 		free(k);
 		return NULL;
 	}
-    unsigned char *h = malloc(sizeof(unsigned char) * 3);
-    if (!h){
-        free(k);
-        delete_list_cell(lcp);
-        return NULL;
-    }
-    h[0] = 'h'; 
-    h[1] = '0' + nb % 10; //on ne cree pas plus de 10 blocks dans les tests, apres ca la valeur de hachage reboucle
-    h[2] = '\0'; 
-    unsigned char *prev_h = malloc(sizeof(unsigned char) * 3);
-    if (!prev_h){
-        free(k);
-        delete_list_cell(lcp);
-        free(h);
-        return NULL;
-    }
-    prev_h[0] = 'h'; 
-    prev_h[1] = '0' + nb % 10 - 1;; 
-    prev_h[2] = '\0'; 
-
 
     CellProtected* tmp = lcp;
 	int nb_votes = 0;
@@ -44,11 +24,16 @@ Block * create_test_block(int nb){
 		tmp = tmp->next;
 	}
 
-    Block *b = create_Block(k, lcp, h, prev_h, 0, nb_votes);
+    Block *b = init_block(k, lcp, NULL, previous_hash, 0, nb_votes);
     if (!b){
         free(k);
-        delete_list_cell(lcp);
-        free(h);
+        delete_list_cell(lcp);  
+        return NULL;
+    }
+
+    //Calcule la proof of work du bloc
+    if (compute_proof_of_work(b, d) == 0){ //la valeur hachée du bloc est maj dans la fonction
+        full_delete_block(b);
         return NULL;
     }
 
@@ -59,32 +44,36 @@ Block * create_test_block(int nb){
 int main(){
     //////////////////////Tests Exercice 7/////////////////////////////////////
     printf("---TESTS EXERCICE 7---\n");
-    //Tests create_Block, creation d'un bloc test
-    Block *b1 = create_test_block(1);
+    //Tests init_block, creation d'un bloc test
+    Block *b1 = create_test_block(NULL, 2); //bloc initial
     if (!b1){
         return 1;
     }
+    printf("\nHASH avant ecriture=\n");
+    print_hash_sha256(b1->hash);
 
     //Tests ecrire_block
     if (ecrire_block("blocks.txt", b1) == 0){
         full_delete_block(b1);
         return 1;
     }
-
+    
     //Tests lire_block
     Block *b_read = lire_block("blocks.txt");
     if (!b_read){
         full_delete_block(b1);
         return 1;
     }
-        
+    printf("\nHASH apres lecture=\n");
+    print_hash_sha256(b_read->hash);
 
+    
     if (ecrire_block("blocks.txt", b_read) == 0){ //doit ecrire la meme chose que b dans blocks.txt
         full_delete_block(b1);
         full_delete_block(b_read);
         return 1;
     }
-
+    
     //Tests block_to_str
     char *block_str = block_to_str(b_read);
     if (!block_str){
@@ -110,7 +99,12 @@ int main(){
 
     //Tests compute_proof_of_work
     int d = 2; // nombre de zeros demande
-    compute_proof_of_work(b_read, d);
+    if (compute_proof_of_work(b_read, d) == 0){
+        full_delete_block(b1);
+        full_delete_block(b_read);
+        return 1;  
+    }
+
     printf("\nPour une proof of work avec %d zéros\n", d);
     printf("nonce=%d\n", b_read->nonce);
     printf("valeur hachée du bloc=\n");
@@ -124,25 +118,25 @@ int main(){
     full_delete_block(b_read);
 
 
-
+    
     //////////////////////Tests Exercice 8/////////////////////////////////////
     printf("\n---TESTS EXERCICE 8---\n");
 
     //Création de blocs supplémentaires
-    Block *b2 = create_test_block(2);
+    Block *b2 = create_test_block(b1->previous_hash, 2);
     if (!b2){
         full_delete_block(b1);
         return 1;
     }
 
-    Block *b3 = create_test_block(3);
+    Block *b3 = create_test_block(b2->previous_hash, 2);
     if (!b3){
         full_delete_block(b1);
         full_delete_block(b2);
         return 1;
     }
 
-    Block *b4 = create_test_block(4);
+    Block *b4 = create_test_block(b3->previous_hash, 2);
     if (!b4){
         full_delete_block(b1);
         full_delete_block(b2);
@@ -224,7 +218,16 @@ int main(){
     printf("\n---TESTS EXERCICE 9---\n");
     submit_vote(b1->votes->data);
 
+    CellTree * test_tree = NULL;
+    //Cree un auteur
+    Key *test_k = malloc(sizeof(Key));
+    if (!test_k)
+        return 1;
+    test_k->n = 123;
+    test_k->val = 456;
+    create_block(test_tree, test_k, 2);
 
     full_delete_tree(node1);
     return 0;
+    
 }
