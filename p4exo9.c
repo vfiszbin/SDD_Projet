@@ -221,3 +221,16 @@ CellTree* read_tree(){
 	}
     return NULL;
 }
+
+Key* compute_winner_BT(CellTree* tree,CellKey* candidates,CellKey* voters,int sizeC,int sizeV){
+    CellProtected* liste_votes=NULL;
+    if(!tree){
+        return NULL;
+    }
+    while(tree->block->votes){
+        fusion_liste_protected(liste_votes,tree->block->votes);
+    }
+    supprime_declarations_non_valides(&liste_votes);
+    Key* gagnant=compute_winner(liste_votes,candidates,voters,sizeC,sizeV);
+    return gagnant;
+}
