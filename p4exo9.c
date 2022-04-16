@@ -222,10 +222,11 @@ CellTree* read_tree(){
     return NULL;
 }
 
-Key* compute_winner_BT(CellTree* tree,CellKey* candidates,CellKey* voters,int sizeC,int sizeV){
+/*Determine le gagnant de l'election en comptabilisant les votes de la plus longue chaine de l'arbre tree*/
+Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int sizeC, int sizeV){
     CellProtected* liste_votes=NULL;
     if(!tree){
-        printf("je suis vide")
+        printf("je suis vide");
     }
     while(tree->block->votes){
         fusion_liste_protected(liste_votes,tree->block->votes);

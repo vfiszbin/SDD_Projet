@@ -28,6 +28,7 @@ int verify_block(Block *b, int d);
 void write_hash_sha256(FILE *f, unsigned char *hashed_value_of_block);
 int read_hash_sha256(char*buffer, unsigned char * dest, int len_buffer);
 char *strjoin(char *s1, char const *s2, int free_s1);
+char *int_to_str(int n);
 
 
 #endif

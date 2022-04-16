@@ -265,6 +265,18 @@ int	nb_of_digits(int n)
     return len;
 }
 
+/*Convertit un entier n sous sa representation en chaine de caracteres*/
+char *int_to_str(int n){
+    int nb_digits = nb_of_digits(n);
+    char *n_str = (char*)malloc(sizeof(char)* nb_digits + 1);
+    if (!n_str)
+        return NULL;
+    snprintf(n_str, nb_digits + 1, "%d", n);
+    return n_str;
+}
+
+
+
 /*Genere une chaine de caracteres representant un bloc*/
 char* block_to_str(Block* block){
     char *block_str;
