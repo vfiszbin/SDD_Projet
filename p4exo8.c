@@ -37,7 +37,10 @@ int update_height(CellTree* father, CellTree* child){
 
 /*Ajoute un fils child au noeud father, met a jour la hauteur de tous les ascendants*/
 void add_child(CellTree* father, CellTree* child){
-    if(!father || !child){
+    if (!child)
+        return;
+    if(!father){ // arbre vide
+        father = child;
         return ;
     }
 
@@ -103,7 +106,8 @@ void print_tree2D(CellTree *cell, int spaces){
     printf("\n");
     for (int i = 10; i < spaces; i++)
         printf(" ");
-    printf("(%d,%s)\n", cell->height ,cell->block->hash);
+    printf("%d,", cell->height);
+    print_hash_sha256(cell->block->hash);
  
     print_tree2D(cell->firstChild, spaces); //affiche ensuite les fils gauche
 }
@@ -136,6 +140,7 @@ void full_delete_node(CellTree* node){
 
 /*Libere l'arbre avec full_delete_block*/
 void full_delete_tree(CellTree* tree){
+
     if(tree){
         full_delete_tree(tree->firstChild);
         full_delete_tree(tree->nextBro);

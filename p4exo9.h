@@ -4,6 +4,7 @@
 
 
 void submit_vote(Protected* pr);
-
+void create_block(CellTree* tree, Key* author, int d);
+void add_block(int d, char* name);
 
 #endif
