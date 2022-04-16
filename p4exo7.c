@@ -139,18 +139,13 @@ Block* lire_block(char* nom){
         fclose(f);
         return NULL;
     }
-    read_hash_sha256(buffer, hash, len_buffer);
-
-
-
-
-    // if (sscanf(buffer,"%s",hash) != 1){
-    //     delete_list_cell(lcp);
-    //     free(cle);
-    //     free(hash);
-    //     fclose(f);
-    //     return NULL;
-    // }
+    if (read_hash_sha256(buffer, hash, len_buffer) == 0){
+        delete_list_cell(lcp);
+        free(cle);
+        free(hash);
+        fclose(f);
+        return NULL;
+    }
 
     //lit le hash du bloc precedent
     if (fgets(buffer, BUFFLEN, f) == NULL){
@@ -174,15 +169,14 @@ Block* lire_block(char* nom){
             fclose(f);
             return NULL;
         }
-        read_hash_sha256(buffer, hash_precedent, len_buffer);
-        // if (sscanf(buffer,"%s", hash_precedent) != 1){
-        //     delete_list_cell(lcp);
-        //     free(cle);
-        //     free(hash);
-        //     free(hash_precedent);
-        //     fclose(f);
-        //     return NULL;
-        // }
+        if (read_hash_sha256(buffer, hash_precedent, len_buffer) == 0){
+            delete_list_cell(lcp);
+            free(cle);
+            free(hash);
+            free(hash_precedent);
+            fclose(f);
+            return NULL;
+        }
     }
 
     //lit nonce
@@ -278,7 +272,7 @@ char* block_to_str(Block* block){
     //Recupere le pervious_hash
     char *previous_hash;
     if (block->previous_hash == NULL)
-        previous_hash = "0"; //le bloc racine n'a pas de bloc precedent, on donne une valeur par defaut de 0
+        previous_hash = "NULL"; //le bloc racine n'a pas de bloc precedent, on donne une valeur par defaut de 0
     else  
         previous_hash = (char *)block->previous_hash;
 
@@ -416,16 +410,20 @@ int compute_proof_of_work(Block *B, int d){
 }
 
 /*Lit la valeur hachee (donnee en hexadecimale) d'un bloc*/
-void read_hash_sha256(char*buffer, unsigned char * dest, int len_buffer){
+int read_hash_sha256(char*buffer, unsigned char * dest, int len_buffer){
     int i = 0;
     int j = 0;
-
-    while (j < len_buffer){
-        sscanf(buffer + j,"%02hhx", &dest[i]);
+    printf("\nlen_buffer=%d\n", len_buffer);
+    while (j < len_buffer - 1){
+        // printf("\nj=%d\n", j);
+        // printf("sscanf=%d\n",sscanf(buffer + j, "%02hhx", &dest[i]));
+        if (sscanf(buffer + j, "%02hhx", &dest[i]) != 1)
+            return 0;
         i++;
         j+=2 ;
     }
     dest[i] = '\0';
+    return 1;
 }
 
 /*Ecrit la valeur hachee (donnee en hexadecimale) d'un bloc*/

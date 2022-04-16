@@ -106,7 +106,8 @@ void print_tree2D(CellTree *cell, int spaces){
     printf("\n");
     for (int i = 10; i < spaces; i++)
         printf(" ");
-    printf("(%d,%s)\n", cell->height ,cell->block->hash);
+    printf("%d,", cell->height);
+    print_hash_sha256(cell->block->hash);
  
     print_tree2D(cell->firstChild, spaces); //affiche ensuite les fils gauche
 }

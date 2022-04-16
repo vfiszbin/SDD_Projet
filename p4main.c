@@ -4,11 +4,11 @@
 
 /*Cree un bloc pour pouvoir tester les fonctions de la partie 4
 nb est le numero de bloc et doit etre compris entre 1 et 9*/
-Block * create_test_block(unsigned char * previous_hash, int d){
+Block * create_test_block(unsigned char * previous_hash, int d, int num){
     Key *k = malloc(sizeof(Key));
     if (!k)
         return NULL;
-    k->n = 123;
+    k->n = 123 + num; //num sert juste a differencier les blocks pour ne pas avoir la meme valeur hachee
     k->val = 456;
 
     CellProtected *lcp = read_protected("declarations.txt");
@@ -24,7 +24,24 @@ Block * create_test_block(unsigned char * previous_hash, int d){
 		tmp = tmp->next;
 	}
 
-    Block *b = init_block(k, lcp, NULL, previous_hash, 0, nb_votes);
+    //duplique le previous_hash si non NULL
+    unsigned char *new_previous_hash;
+    if (previous_hash == NULL)
+        new_previous_hash = NULL;
+    else{
+        new_previous_hash = malloc(sizeof(unsigned char) * SHA256_DIGEST_LENGTH + 1);
+        if (!new_previous_hash){
+            free(k);
+            delete_list_cell(lcp);
+            return NULL;
+        }
+        int i;
+        for (i = 0; i < SHA256_DIGEST_LENGTH; i++)
+            new_previous_hash[i] = previous_hash[i];
+        new_previous_hash[i] = '\0';
+    }
+
+    Block *b = init_block(k, lcp, NULL, new_previous_hash, 0, nb_votes);
     if (!b){
         free(k);
         delete_list_cell(lcp);  
@@ -45,13 +62,13 @@ int main(){
     //////////////////////Tests Exercice 7/////////////////////////////////////
     printf("---TESTS EXERCICE 7---\n");
     //Tests init_block, creation d'un bloc test
-    Block *b1 = create_test_block(NULL, 2); //bloc initial
+    Block *b1 = create_test_block(NULL, 1, 1); //bloc initial
     if (!b1){
         return 1;
     }
     printf("\nHASH avant ecriture=\n");
     print_hash_sha256(b1->hash);
-
+    
     //Tests ecrire_block
     if (ecrire_block("blocks.txt", b1) == 0){
         full_delete_block(b1);
@@ -123,20 +140,20 @@ int main(){
     printf("\n---TESTS EXERCICE 8---\n");
 
     //Création de blocs supplémentaires
-    Block *b2 = create_test_block(b1->previous_hash, 2);
+    Block *b2 = create_test_block(b1->hash, 1, 2);
     if (!b2){
         full_delete_block(b1);
         return 1;
     }
 
-    Block *b3 = create_test_block(b2->previous_hash, 2);
+    Block *b3 = create_test_block(b2->hash, 1, 3);
     if (!b3){
         full_delete_block(b1);
         full_delete_block(b2);
         return 1;
     }
 
-    Block *b4 = create_test_block(b3->previous_hash, 2);
+    Block *b4 = create_test_block(b3->hash, 1, 4);
     if (!b4){
         full_delete_block(b1);
         full_delete_block(b2);
@@ -192,8 +209,10 @@ int main(){
     print_tree2D(node1, 0);
 
     //Tests highest_child et last_node
-    printf("\nhighest_child=%s\n", highest_child(node1)->block->hash);
-    printf("\nlast_node=%s\n", last_node(node1)->block->hash);
+    printf("\nhighest_child=");
+    print_hash_sha256(highest_child(node1)->block->hash);
+    printf("\nlast_node=");
+    print_hash_sha256(last_node(node1)->block->hash);
     
 
     //Tests fusion_liste_protected et fusion_votes_arbre
@@ -213,7 +232,6 @@ int main(){
 
 
 
-
     //////////////////////Tests Exercice 9/////////////////////////////////////
     printf("\n---TESTS EXERCICE 9---\n");
     submit_vote(b1->votes->data);
@@ -221,13 +239,17 @@ int main(){
     CellTree * test_tree = NULL;
     //Cree un auteur
     Key *test_k = malloc(sizeof(Key));
-    if (!test_k)
+    if (!test_k){
+        full_delete_tree(node1);
+    }
         return 1;
     test_k->n = 123;
     test_k->val = 456;
     create_block(test_tree, test_k, 2);
 
+
     full_delete_tree(node1);
+
     return 0;
-    
+
 }
