@@ -1,5 +1,6 @@
 #include "p4exo7.h"
 #include "p4exo8.h"
+#include "p4exo9.h"
 
 /*Cree un bloc pour pouvoir tester les fonctions de la partie 4
 nb est le numero de bloc et doit etre compris entre 1 et 9*/
@@ -216,10 +217,14 @@ int main(){
 
     delete_list_cell(liste_votes);
 
+
+
+
+    //////////////////////Tests Exercice 9/////////////////////////////////////
+    printf("\n---TESTS EXERCICE 9---\n");
+    submit_vote(b1->votes->data);
+
+
     full_delete_tree(node1);
-
     return 0;
-
-
- 
 }
