@@ -1,16 +1,21 @@
+#include "p2exo3.h"
 #include "p2exo4.h"
 #include "p4exo7.h"
 #include "p4exo8.h"
 #include "p4exo9.h"
 
-#define NB_CITOYENS 1000
-#define NB_CANDIDATS 5
-#define NB_ASSESSEURS 10
-#define D 2 //le nombre de zeros par lequel la valeur hachee d'un bloc doit demarrer
+#define NB_CITOYENS 10
+#define NB_CANDIDATS 3
+#define NB_ASSESSEURS 3
+#define D 1 //le nombre de zeros par lequel la valeur hachee d'un bloc doit demarrer
+#define NB_VOTES_PAR_BLOC 10 
+#define SIZE_C 6 //taille table de hachage des candidats
+#define SIZE_V 20 //taille table de hachage des votants
+
 
 /*Selectione les nb premiers citoyens de la liste citoyens pour officier en tant qu'assesseurs.
 Retourne un tableau contenant les cles publiques des assesseurs*/
-Key * tab_assesseurs(CellKey *citoyens, int nb){
+Key ** tab_assesseurs(CellKey *citoyens, int nb){
     Key **assesseurs = (Key**)malloc(sizeof(Key*) * nb);
     if (!assesseurs)
         return NULL;
@@ -34,8 +39,6 @@ Key *random_assesseur(Key **assesseurs, int len){
 
 int main(){
     srand(time(NULL));
-    int sizeC = 5;
-    int sizeV = 1000;
     //Genere citoyens et candidats et ecrit leurs cles dans keys.txt et candidates.txt
     //Chaque citoyens vote pour un candidat, les declarations de votes sont ecrites dans declarations.txt
     if(generate_random_data(NB_CITOYENS, NB_CANDIDATS) == 0)
@@ -82,11 +85,12 @@ int main(){
     char *nb_blocks_str;
     char *blockname;
     CellTree* tree=NULL;
-    while(votes){
-        while(cpt<10 && votes){
-            submit_vote(votes->data);
+    CellProtected *vote = votes;
+    while(vote){
+        while(cpt < NB_VOTES_PAR_BLOC && vote){
+            submit_vote(vote->data);
             cpt++;
-            votes->next;
+            vote = vote->next;
         }
         //Tous les 10 votes soumis, un bloc contenant ces votes est créé
         create_block(tree, random_assesseur(assesseurs, NB_ASSESSEURS), D);
@@ -109,15 +113,41 @@ int main(){
             return 1;
         }
         free(nb_blocks_str);
+        
         add_block(D, blockname);
         free(blockname);
         cpt=0;
         nb_blocks++;
         
     }
+
+    free(assesseurs);
     
-    Cell_tree* tree_valide=read_tree();
-    print_tree(arbre_valide);
-    Key* gagnant = compute_winner_BT(tree_valide,lck_c, lck_v,sizeC,sizeV);
-    printf("le gagnant est (%lx,%lx"), key_to_str(gagnant));
+    //Lecture du repertoire Blockchain et construction de l'arbre des blocs de declarations de votes
+    CellTree *arbre_blocs = read_tree();
+    if (!arbre_blocs){
+            delete_list_keys(citoyens);
+            delete_list_keys(candidats);
+            delete_list_cell(votes);
+            return 1;
+    }
+    print_tree2D(arbre_blocs, 0);
+
+    //Calcul du vainqueur de l'election en comptabilisant les votes de la plus longue branche de l'arbre de blocs
+    Key* gagnant = compute_winner_BT(arbre_blocs, candidats, citoyens, SIZE_C, SIZE_V);
+    if (!gagnant){
+        delete_list_keys(citoyens);
+        delete_list_keys(candidats);
+        delete_list_cell(votes);
+        full_delete_tree(arbre_blocs);
+        return 1;  
+    }
+ 
+    printf("Le candidat (%lx,%lx) remporte l'élection !\n", gagnant->val, gagnant->n);
+
+    //Libere la memoire
+    delete_list_keys(citoyens);
+    delete_list_keys(candidats);
+    delete_list_cell(votes);
+    full_delete_tree(arbre_blocs);
 }

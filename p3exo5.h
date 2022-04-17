@@ -23,5 +23,6 @@ void print_list_cell_protected(CellProtected* pr);
 void delete_cell_protected(CellProtected* c);
 void delete_cell_key(CellKey *c);
 void add_cellProtected_to_front(CellProtected** lcp, CellProtected* c);
+void add_cellProtected_to_tail(CellProtected** lcp, CellProtected* c);
 
 #endif

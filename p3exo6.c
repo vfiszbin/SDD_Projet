@@ -64,6 +64,7 @@ int find_position(HashTable* t, Key* key){
 	int i = pos + 1;
 	if (i >= t->size) //si i depasse la taille du tableau
 		i = 0;
+	printf("\nFINDPOS size=%d i=%d\n", t->size, i);
 	while (t->tab[i]->key->val != key->val && t->tab[i]->key->n != key->n && i != pos){
 		i++;
 		if (i >= t->size) //si i depasse la taille du tableau
@@ -75,8 +76,14 @@ int find_position(HashTable* t, Key* key){
 /*Cree et initialise une table de hachage de taille size contenant une cellule pour chaque cle de la liste chainee keys*/
 HashTable* create_HashTable(CellKey* keys, int size){
 	HashTable *t = (HashTable*) malloc(sizeof(HashTable));
+	if (!t)
+		return NULL;
 	t->size = size;
 	t->tab = (HashCell**) malloc(sizeof(HashCell*) * size);
+	if(!t->tab){
+		free(t);
+		return NULL;
+	}
 	int i = 0;
 	while (i < size){
 		t->tab[i] = NULL;
@@ -88,6 +95,7 @@ HashTable* create_HashTable(CellKey* keys, int size){
 	while (keys){
 		c = create_HashCell(keys->data);
 		pos = hash_function(c->key, size);
+		printf("\nsize=%d POS=%d\n", size, pos);
 		while (t->tab[pos] != NULL){ //probing pour trouver la premiere case libre dans la table
 			pos++;
 			if (i >= size) //si pos depasse la taille du tableau

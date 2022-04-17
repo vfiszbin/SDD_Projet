@@ -65,6 +65,10 @@ void create_block(CellTree* tree, Key* author, int d){
         full_delete_block(b);
         return;
     }
+    printf("\nHASHED VALUE in create_block=\n");
+    print_hash_sha256(b->hash);
+
+    printf("\nverify_block dans create_block =%d\n",verify_block(b,d));
 
     // //Ajoute le bloc dans l'arbre
     // CellTree *node = create_node(b);
@@ -85,6 +89,9 @@ void create_block(CellTree* tree, Key* author, int d){
     }
     remove("Pending_votes.txt");
 
+    printf("\nverify_block fin create_block =%d\n",verify_block(b,d));
+    printf("\nrepresentation du bloc ecrit=\n");
+    printf("%s\n",block_to_str(b));
     full_delete_block(b);
 }
 
@@ -96,7 +103,9 @@ void add_block(int d, char* name){
     if (!b){
         return;
     }
+    printf("\nBLOCK VALIDE?=%d\n", (verify_block(b, d) == 1));
     if (verify_block(b, d) == 1){ //si le bloc est valide
+        printf("\nBLOCK VALIDE\n");
         char *filename = strjoin("Blockchain/", name, 0);
         if (!filename){
             full_delete_block(b);
@@ -224,16 +233,23 @@ CellTree* read_tree(){
 
 /*Determine le gagnant de l'election en comptabilisant les votes de la plus longue chaine de l'arbre tree*/
 Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int sizeC, int sizeV){
-    CellProtected* liste_votes=NULL;
-    if(!tree){
-        printf("je suis vide");
+    //Extrait la liste des declarations de vote de la plus longue branche de l'arbre
+    CellProtected *votes = fusion_votes_arbre(tree);
+    if (!votes)
+        return NULL;
+    
+    //Suppressions des declarations de vote non valides
+    supprime_declarations_non_valides(&votes);
+
+    //Determination du vainqueur de l'eclection
+
+    printf("\nLISTE VOTES=\n");
+    print_list_cell_protected(votes);
+
+    Key* gagnant = compute_winner(votes, candidates, voters, sizeC, sizeV);
+    if (!gagnant){
+        delete_cell_protected(votes);
+        return NULL;
     }
-    while(tree->block->votes){
-        fusion_liste_protected(liste_votes,tree->block->votes);
-        compute_winner_BT(tree->nextBro,candidates,voters,sizeC,sizeV);
-        compute_winner_BT(tree->firstChild,candidates,voters,sizeC,sizeV);
-    }
-    supprime_declarations_non_valides(&liste_votes);
-    Key* gagnant=compute_winner(liste_votes,candidates,voters,sizeC,sizeV);
     return gagnant;
 }

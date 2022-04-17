@@ -119,7 +119,7 @@ Block* lire_block(char* nom){
             fclose(f);
             return NULL;
             }
-        add_cellProtected_to_front(&lcp, c);
+        add_cellProtected_to_tail(&lcp, c); //ajout de la declaration en fin de liste pour preserver la hash value des blocs contenant les declarations
     }
 
     //lit le hash du bloc
@@ -206,6 +206,9 @@ Block* lire_block(char* nom){
         free(hash_precedent);
         fclose(f);
     }
+
+    printf("\nrepresentation du bloc lu=\n");
+    printf("%s\n",block_to_str(b));
 
     fclose(f);
     return b;
@@ -360,7 +363,6 @@ void delete_block(Block *b){
             vote = vote->next;
             free(tmp);
         }
-
         free(b->hash);
         if (b->previous_hash != NULL)
             free(b->previous_hash); 
@@ -368,11 +370,10 @@ void delete_block(Block *b){
     }
 }
 
-/*Supprime un bloc completement*/
+/*Supprime un bloc completement, sauf son auteur*/
 void full_delete_block(Block *b){
     if (b != NULL){
         delete_list_cell(b->votes);
-        free(b->author);
         free(b->hash);
         if (b->previous_hash != NULL)
             free(b->previous_hash); 
@@ -472,6 +473,8 @@ int verify_block(Block *b, int d){
         return 0;
     }
     free(block_str);
+    printf("\nHASHED VALUE in verify_block=\n");
+    print_hash_sha256(hashed_value_of_block);
     int res = d_succesive_zeros(hashed_value_of_block, d);
     free(hashed_value_of_block);
     return res;

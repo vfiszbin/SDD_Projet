@@ -49,10 +49,10 @@ char* key_to_str (Key* key){
     return u;
 }
 
-/*Alloue, initialise et retourne une clé de type Key a partir de sa representation sous forme de chaine de caracteres*/
+/*Alloue, initialise et retourne une cle de type Key a partir de sa representation sous forme de chaine de caracteres*/
 Key* str_to_key(char* str){
     long val,n;
-    sscanf(str,"(%lx,%lx)",&val,&n);
+    sscanf(str,"(%lx,%lx)", &val, &n);
     Key* cle = malloc (sizeof(Key));
     if (cle == NULL)
         return NULL;

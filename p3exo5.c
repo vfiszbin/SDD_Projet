@@ -110,6 +110,18 @@ CellProtected* create_cell_protected (Protected* pr){
 void add_cellProtected_to_front(CellProtected** lcp, CellProtected* c){
 	c->next = *lcp;
 	*lcp = c;
+}
+
+/*Ajoute une déclaration signee en fin de liste*/
+void add_cellProtected_to_tail(CellProtected** lcp, CellProtected* c){
+	if (*lcp == NULL)
+		add_cellProtected_to_front(lcp, c);
+	else{
+		CellProtected * cell = *lcp;
+		while(cell->next != NULL) //cherche le dernier element de la liste
+			cell = cell->next;
+		cell->next = c;
+	}
 
 }
 
