@@ -207,9 +207,6 @@ Block* lire_block(char* nom){
         fclose(f);
     }
 
-    printf("\nrepresentation du bloc lu=\n");
-    printf("%s\n",block_to_str(b));
-
     fclose(f);
     return b;
 }
@@ -449,7 +446,7 @@ void write_hash_sha256(FILE *f, unsigned char *hashed_value_of_block){
         return;
     }
     for(int i=0; i < SHA256_DIGEST_LENGTH; i++){
-        fprintf(f, "%02x",hashed_value_of_block[i]);
+        fprintf(f, "%02x", hashed_value_of_block[i]);
     }
     fprintf(f, "\n");
 }
@@ -473,8 +470,7 @@ int verify_block(Block *b, int d){
         return 0;
     }
     free(block_str);
-    printf("\nHASHED VALUE in verify_block=\n");
-    print_hash_sha256(hashed_value_of_block);
+
     int res = d_succesive_zeros(hashed_value_of_block, d);
     free(hashed_value_of_block);
     return res;

@@ -250,7 +250,7 @@ int main(){
     test_k->val = 456;
     
 
-    create_block(test_tree, test_k, 2); //Auteur supprimer dans la fonction en meme temps que son block
+    create_block(&test_tree, test_k, 2); //Auteur supprimer dans la fonction en meme temps que son block
     
     add_block(2, "test_block");
     

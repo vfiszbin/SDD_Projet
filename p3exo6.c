@@ -9,7 +9,8 @@ void supprime_declarations_non_valides(CellProtected **lcp){
 	CellProtected *prec = NULL;
 
 	while(c){
-		if (verify(c->data) == 0){ //la signature est invalide			
+		if (verify(c->data) == 0){ //la signature est invalide
+			printf("\nELEMENT INVALIDE\n");	
 			//Suppression de l'element de la liste chainee sans rompre la liste
 			//L'element est en tete de liste
 			if (prec == NULL){
@@ -64,11 +65,11 @@ int find_position(HashTable* t, Key* key){
 	int i = pos + 1;
 	if (i >= t->size) //si i depasse la taille du tableau
 		i = 0;
-	printf("\nFINDPOS size=%d i=%d\n", t->size, i);
 	while (t->tab[i]->key->val != key->val && t->tab[i]->key->n != key->n && i != pos){
 		i++;
 		if (i >= t->size) //si i depasse la taille du tableau
 			i = 0; 
+		printf("\nFINDPOS size=%d i=%d pos=%d\n", t->size, i, pos);
 	}
 	return i;
 }
@@ -89,17 +90,20 @@ HashTable* create_HashTable(CellKey* keys, int size){
 		t->tab[i] = NULL;
 		i++;
 	}
-	i = 0;
+
 	HashCell *c;
 	int pos;
 	while (keys){
 		c = create_HashCell(keys->data);
+		if (!c){
+			delete_hashtable(t);
+			return NULL;
+		}
 		pos = hash_function(c->key, size);
-		printf("\nsize=%d POS=%d\n", size, pos);
 		while (t->tab[pos] != NULL){ //probing pour trouver la premiere case libre dans la table
 			pos++;
-			if (i >= size) //si pos depasse la taille du tableau
-				i = 0;
+			if (pos >= size) //si pos depasse la taille du tableau
+				pos = 0;
 		}
 		t->tab[pos] = c;
 

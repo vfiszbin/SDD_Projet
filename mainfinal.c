@@ -4,13 +4,13 @@
 #include "p4exo8.h"
 #include "p4exo9.h"
 
-#define NB_CITOYENS 10
-#define NB_CANDIDATS 3
-#define NB_ASSESSEURS 3
+#define NB_CITOYENS 100
+#define NB_CANDIDATS 10
+#define NB_ASSESSEURS 10
 #define D 1 //le nombre de zeros par lequel la valeur hachee d'un bloc doit demarrer
 #define NB_VOTES_PAR_BLOC 10 
-#define SIZE_C 6 //taille table de hachage des candidats
-#define SIZE_V 20 //taille table de hachage des votants
+#define SIZE_C 20 //taille table de hachage des candidats
+#define SIZE_V 200 //taille table de hachage des votants
 
 
 /*Selectione les nb premiers citoyens de la liste citoyens pour officier en tant qu'assesseurs.
@@ -48,8 +48,8 @@ int main(){
     CellKey *citoyens = read_public_keys("keys.txt");
     if (!citoyens)
         return 1;
-    printf("\nListe chaînée des clés des citoyens :\n");
-    print_list_keys(citoyens);
+    // printf("\nListe chaînée des clés des citoyens :\n");
+    // print_list_keys(citoyens);
 
     //Lit keys.txt pour obtenir une liste chainee des cles des candidats
     CellKey *candidats = read_public_keys("candidates.txt");
@@ -57,8 +57,8 @@ int main(){
 		delete_list_keys(citoyens);
         return 1;
     }
-    printf("\nListe chaînée des clés des candidats :\n");
-    print_list_keys(candidats);
+    // printf("\nListe chaînée des clés des candidats :\n");
+    // print_list_keys(candidats);
 
     //Lit declarations.txt pour constituer la liste chainees des declarations de vote
     CellProtected *votes = read_protected("declarations.txt");
@@ -67,8 +67,8 @@ int main(){
         delete_list_keys(candidats);
         return 1;
     }
-    printf("\nListe chaînée des déclarations de vote :\n");
-    print_list_cell_protected(votes);
+    // printf("\nListe chaînée des déclarations de vote :\n");
+    // print_list_cell_protected(votes);
 
     //Selectionne des assesseurs parmi les citoyens
     Key **assesseurs = tab_assesseurs(citoyens, NB_ASSESSEURS);
@@ -81,10 +81,10 @@ int main(){
 
     //Soumissions des votes
     int cpt = 0;
-    int nb_blocks = 0;
+    int nb_blocks = 1;
     char *nb_blocks_str;
     char *blockname;
-    CellTree* tree=NULL;
+    CellTree* tree = NULL;
     CellProtected *vote = votes;
     while(vote){
         while(cpt < NB_VOTES_PAR_BLOC && vote){
@@ -93,7 +93,7 @@ int main(){
             vote = vote->next;
         }
         //Tous les 10 votes soumis, un bloc contenant ces votes est créé
-        create_block(tree, random_assesseur(assesseurs, NB_ASSESSEURS), D);
+        create_block(&tree, random_assesseur(assesseurs, NB_ASSESSEURS), D);
 
         nb_blocks_str = int_to_str(nb_blocks);
         if (!nb_blocks_str){
@@ -120,7 +120,6 @@ int main(){
         nb_blocks++;
         
     }
-
     free(assesseurs);
     
     //Lecture du repertoire Blockchain et construction de l'arbre des blocs de declarations de votes
@@ -131,6 +130,7 @@ int main(){
             delete_list_cell(votes);
             return 1;
     }
+
     print_tree2D(arbre_blocs, 0);
 
     //Calcul du vainqueur de l'election en comptabilisant les votes de la plus longue branche de l'arbre de blocs

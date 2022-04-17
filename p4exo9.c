@@ -24,7 +24,7 @@ void submit_vote(Protected* pr){
 /*Cree un bloc valide contenant les votes en attente dans le fichier ”Pending votes.txt”,
 supprime le fichier ”Pending votes.txt” apres avoir cree le bloc,
 et ecrit le bloc obtenu dans un fichier ”Pending block”*/
-void create_block(CellTree* tree, Key* author, int d){
+void create_block(CellTree** tree, Key* author, int d){
     //Lit les votes en attente dans Pending_votes.txt
     CellProtected* votes = read_protected("Pending_votes.txt");
     if (!votes || !author)
@@ -39,7 +39,7 @@ void create_block(CellTree* tree, Key* author, int d){
     }
 
     //Recupere la valeur hachee du dernier bloc de l'arbre
-    CellTree* last = last_node(tree);
+    CellTree* last = last_node(*tree);
     unsigned char *previous_hash;
     if (last == NULL) //cas de la racine
         previous_hash = NULL;
@@ -49,9 +49,11 @@ void create_block(CellTree* tree, Key* author, int d){
             return ;
         int i;
         for (i = 0; i < SHA256_DIGEST_LENGTH; i++)
-            previous_hash[i] = last->block->previous_hash[i];
+            previous_hash[i] = last->block->hash[i];
         previous_hash[i] = '\0';
     }
+
+
 
     //Alloue et initialise le bloc
     Block* b = init_block(author, votes, NULL, previous_hash, 0, nb_votes);
@@ -65,34 +67,32 @@ void create_block(CellTree* tree, Key* author, int d){
         full_delete_block(b);
         return;
     }
-    printf("\nHASHED VALUE in create_block=\n");
-    print_hash_sha256(b->hash);
 
-    printf("\nverify_block dans create_block =%d\n",verify_block(b,d));
-
-    // //Ajoute le bloc dans l'arbre
-    // CellTree *node = create_node(b);
-    // if (!node){
-    //     full_delete_block(b);
-    //     return;
-    // }
-    // add_child(last, node);
+    //Ajoute le bloc dans l'arbre
+    CellTree *node = create_node(b);
+    if (!node){
+        full_delete_block(b);
+        return;
+    }
+    if (*tree == NULL){ //si l'arbre etait vide, on y place le premier noeud
+        *tree = node;
+    }
+    else{
+        add_child(last, node);
+    }
 
     //Supprime Pending_votes.txt et ecrit le bloc dans Pending_block
     if (ecrire_block("Pending_block", b) == 0){
-        // if (node->father != NULL){
-        //     node->father->firstChild = NULL;
-        // }
-        // full_delete_node(node);
+        if (node->father != NULL){
+            node->father->firstChild = NULL;
+        }
+        full_delete_node(node);
         full_delete_block(b);
         return;
     }
     remove("Pending_votes.txt");
 
-    printf("\nverify_block fin create_block =%d\n",verify_block(b,d));
-    printf("\nrepresentation du bloc ecrit=\n");
-    printf("%s\n",block_to_str(b));
-    full_delete_block(b);
+    // full_delete_block(b);
 }
 
 
@@ -103,9 +103,8 @@ void add_block(int d, char* name){
     if (!b){
         return;
     }
-    printf("\nBLOCK VALIDE?=%d\n", (verify_block(b, d) == 1));
+
     if (verify_block(b, d) == 1){ //si le bloc est valide
-        printf("\nBLOCK VALIDE\n");
         char *filename = strjoin("Blockchain/", name, 0);
         if (!filename){
             full_delete_block(b);
@@ -123,13 +122,14 @@ void add_block(int d, char* name){
 }
 
 /*Retourne 0 si deux chaine sont identique, la difference des valeurs ascii des premiers caracteres non identiques sinon*/
-int strcmp_unsigned(const unsigned char * s1, const unsigned char * s2){
+int strncmp_unsigned(const unsigned char * s1, const unsigned char * s2, int n){
     if (s1 == NULL || s2 == NULL){
         return 1;
     }
 	int i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
+	while (i < n && s1[i] == s2[i]){
 		i++;
+    }
 	return (s1[i] - s2[i]);
 }
 
@@ -200,11 +200,12 @@ CellTree* read_tree(){
 			}
 		}
         closedir(rep);
+            
 
         //recherche des fils de chaque noeud
         for(i = 0; i < nb_blocks; i++){
             for (j = 0; j < nb_blocks; j++){
-                if (strcmp_unsigned(T[i]->block->hash, T[j]->block->previous_hash) == 0){
+                if (strncmp_unsigned(T[i]->block->hash, T[j]->block->previous_hash, SHA256_DIGEST_LENGTH) == 0){
                     add_child(T[i], T[j]);
                 }
             }
@@ -245,6 +246,15 @@ Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int
 
     printf("\nLISTE VOTES=\n");
     print_list_cell_protected(votes);
+    //
+    CellProtected *tmp = votes;
+    int count = 0;
+    while (tmp){
+        count++;
+        tmp = tmp->next;
+    }
+    printf("\nNBVOTES=%d\n", count);
+    //
 
     Key* gagnant = compute_winner(votes, candidates, voters, sizeC, sizeV);
     if (!gagnant){
