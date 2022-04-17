@@ -370,7 +370,6 @@ void delete_block(Block *b){
 /*Supprime un bloc completement, sauf son auteur*/
 void full_delete_block(Block *b){
     if (b != NULL){
-        free(b->author);
         delete_list_cell(b->votes);
         free(b->hash);
         if (b->previous_hash != NULL)
