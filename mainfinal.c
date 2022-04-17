@@ -136,6 +136,9 @@ int main(){
     //Calcul du vainqueur de l'election en comptabilisant les votes de la plus longue branche de l'arbre de blocs
     Key* gagnant = compute_winner_BT(arbre_blocs, candidats, citoyens, SIZE_C, SIZE_V);
     if (!gagnant){
+        while(arbre_blocs){
+            free(arbre_blocs->block->author);
+        }
         delete_list_keys(citoyens);
         delete_list_keys(candidats);
         delete_list_cell(votes);
@@ -148,7 +151,6 @@ int main(){
         free(arbre_blocs->block->author);
     }
     //Libere la memoire
-
     delete_list_keys(citoyens);
     delete_list_keys(candidats);
     delete_list_cell(votes);
