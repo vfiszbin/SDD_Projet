@@ -144,8 +144,11 @@ int main(){
     }
  
     printf("Le candidat (%lx,%lx) remporte l'élection !\n", gagnant->val, gagnant->n);
-
+    while(arbre_blocs){
+        free(arbre_blocs->block->author);
+    }
     //Libere la memoire
+
     delete_list_keys(citoyens);
     delete_list_keys(candidats);
     delete_list_cell(votes);
