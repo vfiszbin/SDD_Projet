@@ -140,7 +140,7 @@ int main(){
         delete_list_keys(candidats);
         delete_list_cell(votes);
         full_delete_tree(arbre_blocs);
-        return 1;  
+        return 1;
     }
  
     printf("Le candidat (%lx,%lx) remporte l'élection !\n", gagnant->val, gagnant->n);
