@@ -468,26 +468,3 @@ int verify_block(Block *b, int d){
     free(hashed_value_of_block);
     return res;
 }
-
-void temps_moyen_computeproofofwork (Block *B) {
-//fonction qui evalue le temps_moyen de la fonction compute_proof_of_work en fonction de d 
-
-    FILE* fic = fopen("temps_proof_of_work.txt","w");
-    if(fic == NULL){
-        printf("erreur à l’ouverture du fichier ");
-        return;;
-    }
-    clock_t temps_initial;
-    clock_t temps_final;
-    double temps_cpu = 0;
-
-    for(int i = 0; i < 4; i++){
-        temps_initial = clock();
-        compute_proof_of_work(B,i);
-        temps_final = clock();
-        temps_cpu = ((double)(temps_final - temps_initial )) / CLOCKS_PER_SEC;
-        printf("time : %lf \n",temps_cpu);
-        fprintf(fic ,"%d %lf \n ",i,temps_cpu);
-    }
-    fclose(fic);
-}

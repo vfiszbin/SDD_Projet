@@ -121,7 +121,6 @@ int add_block(int d, char* name){
         } 
         free(filename);
     }
-    free(b->author);
     full_delete_block(b);
     remove("Pending_block");
     return 1;
@@ -264,4 +263,3 @@ Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int
     delete_list_cell(votes);
     return gagnant;
 }
-

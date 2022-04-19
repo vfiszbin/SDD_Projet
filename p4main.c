@@ -57,13 +57,6 @@ Block * create_test_block(unsigned char * previous_hash, int d, int num){
 
     return b;
 }
-void delete_key_tree(CellTree* tree){
-        while(tree){
-            free(tree->block->author);
-            delete_key_tree(tree->nextBro);
-            delete_key_tree(tree->firstChild);
-        }
-}
 
 
 int main(){
@@ -127,8 +120,6 @@ int main(){
     print_hash_sha256(hashed_value_of_block);
 
     free(hashed_value_of_block);
-    
-    
 
     //Tests compute_proof_of_work
     int d = 1; // nombre de zeros demande
@@ -147,8 +138,8 @@ int main(){
     printf("\nverify_block sur block valide=%d\n", verify_block(b_read, d));
     b_read->nonce++; //modifie une champ du block, ce qui compromet son integrite
     printf("verify_block sur block modifié=%d\n", verify_block(b_read, d));
-    
-    
+
+    full_delete_block(b_read);
 
 
     
@@ -244,24 +235,16 @@ int main(){
     printf("\nListe des votes de la plus longue branche de l'arbre :\n");
     print_list_cell_protected(liste_votes);
 
-    //temps_moyen_computeproofofwork (b1);
+    delete_list_cell(liste_votes);
 
-    
-    
-    
 
-    
+
     //////////////////////Tests Exercice 9/////////////////////////////////////
     printf("\n---TESTS EXERCICE 9---\n");
     submit_vote(b1->votes->data);
-    free(b1->author);
-    free(b_read->author);
-    full_delete_block(b_read);
-    free(b2->author);
-    free(b3->author);
-    free(b4->author);
+
     full_delete_tree(node1); //supprime l'entierete de l'arbre
-    
+
     CellTree * test_tree = NULL;
     //Cree un auteur
     Key *test_k = malloc(sizeof(Key));
@@ -288,10 +271,8 @@ int main(){
     if (!blockchain_tree)
         return 1;
     print_tree2D(blockchain_tree, 0);
-    delete_list_cell(liste_votes);
-    //delete_key_tree(blockchain_tree);
+
     full_delete_tree(blockchain_tree);
-    
 
     return 0;
 
