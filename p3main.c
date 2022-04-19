@@ -1,7 +1,14 @@
+#include "p2exo4.h"
 #include "p3exo5.h"
 #include "p3exo6.h"
 
 int main(){
+	//Genere citoyens, candidats et declarations de votes
+    if (! generate_random_data(10,3)){
+		printf("Erreur allocation mémoire\n");
+		return 1;
+	}
+
 	//Test de read_public_keys
 	CellKey *lck_c = read_public_keys("candidates.txt");
 	if (!lck_c)
@@ -60,15 +67,15 @@ int main(){
 		list_size_v++;
 		tmp = tmp->next;
 	}
-
-	Key *winner_pkey = compute_winner(lcp, lck_c, lck_v, list_size_c * 2, list_size_v * 2);
+	int nb_votes_vainqueur;
+	Key *winner_pkey = compute_winner(lcp, lck_c, lck_v, list_size_c * 2, list_size_v * 2, &nb_votes_vainqueur);
 	if (!winner_pkey){
 		delete_list_keys(lck_c);
 		delete_list_keys(lck_v);
 		delete_list_cell(lcp);
 		return 1;
 	}
-	printf("Winner pkey : (%lx,%lx)\n", winner_pkey->val, winner_pkey->n);
+	printf("Winner pkey : (%lx,%lx) avec %d voix\n", winner_pkey->val, winner_pkey->n, nb_votes_vainqueur);
 	
 	delete_list_keys(lck_c);
 	delete_list_keys(lck_v);

@@ -4,13 +4,13 @@
 #include "p4exo8.h"
 #include "p4exo9.h"
 
-#define NB_CITOYENS 10
-#define NB_CANDIDATS 3
-#define NB_ASSESSEURS 5
+#define NB_CITOYENS 1000
+#define NB_CANDIDATS 5
+#define NB_ASSESSEURS 20
 #define D 1 //le nombre de zeros par lequel la valeur hachee d'un bloc doit demarrer
 #define NB_VOTES_PAR_BLOC 10 
 #define SIZE_C 10 //taille table de hachage des candidats
-#define SIZE_V 20 //taille table de hachage des votants
+#define SIZE_V 2000 //taille table de hachage des votants
 
 
 /*Selectione les nb premiers citoyens de la liste citoyens pour officier en tant qu'assesseurs.
@@ -97,6 +97,7 @@ int main(){
             delete_list_keys(citoyens);
             delete_list_keys(candidats);
             delete_list_cell(votes);
+            free(assesseurs);
             full_delete_tree(tree);
             return 1;
         }

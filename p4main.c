@@ -1,3 +1,4 @@
+#include "p2exo4.h"
 #include "p4exo7.h"
 #include "p4exo8.h"
 #include "p4exo9.h"
@@ -59,6 +60,12 @@ Block * create_test_block(unsigned char * previous_hash, int d, int num){
 
 
 int main(){
+    //Genere citoyens, candidats et declarations de votes
+    if (! generate_random_data(10,3)){
+		printf("Erreur allocation mémoire\n");
+		return 1;
+	}
+    
     //////////////////////Tests Exercice 7/////////////////////////////////////
     printf("---TESTS EXERCICE 7---\n");
     //Tests init_block, creation d'un bloc test
@@ -115,7 +122,7 @@ int main(){
     free(hashed_value_of_block);
 
     //Tests compute_proof_of_work
-    int d = 2; // nombre de zeros demande
+    int d = 1; // nombre de zeros demande
     if (compute_proof_of_work(b_read, d) == 0){
         full_delete_block(b1);
         full_delete_block(b_read);
@@ -250,9 +257,15 @@ int main(){
     test_k->val = 456;
     
 
-    create_block(&test_tree, test_k, 2); //Auteur supprimer dans la fonction en meme temps que son block
+    if (create_block(&test_tree, test_k, 2) == 0){ //Auteur supprimer dans la fonction en meme temps que son block
+        free(test_k);
+        return 1;
+    }
+    free(test_k);
+    full_delete_tree(test_tree);
     
-    add_block(2, "test_block");
+    if (add_block(2, "test_block") == 0)
+        return 1;
     
     CellTree *blockchain_tree = read_tree();
     if (!blockchain_tree)
