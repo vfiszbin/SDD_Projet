@@ -21,14 +21,15 @@ void submit_vote(Protected* pr){
     fclose(f);
 }
 
+
 /*Cree un bloc valide contenant les votes en attente dans le fichier ”Pending votes.txt”,
 supprime le fichier ”Pending votes.txt” apres avoir cree le bloc,
 et ecrit le bloc obtenu dans un fichier ”Pending block”*/
-void create_block(CellTree** tree, Key* author, int d){
+int create_block(CellTree** tree, Key* author, int d){
     //Lit les votes en attente dans Pending_votes.txt
     CellProtected* votes = read_protected("Pending_votes.txt");
     if (!votes || !author)
-        return;
+        return 0;
 
     //Compte le nombre de votes
     int nb_votes = 0;
@@ -45,54 +46,57 @@ void create_block(CellTree** tree, Key* author, int d){
         previous_hash = NULL;
     else{ //duplique le previous_hash
         previous_hash = malloc(sizeof(unsigned char) * SHA256_DIGEST_LENGTH + 1);
-        if (!previous_hash)
-            return ;
+        if (!previous_hash){
+            delete_list_cell(votes);
+            return 0;
+        }
         int i;
         for (i = 0; i < SHA256_DIGEST_LENGTH; i++)
             previous_hash[i] = last->block->hash[i];
         previous_hash[i] = '\0';
     }
 
-
+    //Duplique l'auteur
+    Key *k = (Key*)malloc(sizeof(Key));
+    if (!k){
+        delete_list_cell(votes);
+        free(previous_hash);
+        return 0;
+    }
+    init_key(k, author->val, author->n);
 
     //Alloue et initialise le bloc
-    Block* b = init_block(author, votes, NULL, previous_hash, 0, nb_votes);
+    Block* b = init_block(k, votes, NULL, previous_hash, 0, nb_votes);
     if (!b){
         delete_list_cell(votes);
-        return;
+        free(previous_hash);
+        return 0;
     }
 
     //Calcule la proof of work du bloc
     if (compute_proof_of_work(b, d) == 0){ //la valeur hachée du bloc est maj dans la fonction
         full_delete_block(b);
-        return;
+        return 0;
     }
 
     //Ajoute le bloc dans l'arbre
     CellTree *node = create_node(b);
     if (!node){
         full_delete_block(b);
-        return;
+        return 0;
     }
-    if (*tree == NULL){ //si l'arbre etait vide, on y place le premier noeud
+    if (*tree == NULL) //si l'arbre etait vide, on y place le premier noeud
         *tree = node;
-    }
-    else{
+    else
         add_child(last, node);
-    }
 
     //Supprime Pending_votes.txt et ecrit le bloc dans Pending_block
     if (ecrire_block("Pending_block", b) == 0){
-        if (node->father != NULL){
-            node->father->firstChild = NULL;
-        }
-        full_delete_node(node);
-        full_delete_block(b);
-        return;
+        //a partir de la on ne libere pas b ou node en cas d'erreur, ils sont liberes avec le reste le tree
+        return 0;
     }
     remove("Pending_votes.txt");
-
-    // full_delete_block(b);
+    return 1;
 }
 
 
@@ -258,8 +262,9 @@ Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int
 
     Key* gagnant = compute_winner(votes, candidates, voters, sizeC, sizeV);
     if (!gagnant){
-        delete_cell_protected(votes);
+        delete_list_cell(votes);
         return NULL;
     }
+    delete_list_cell(votes);
     return gagnant;
 }

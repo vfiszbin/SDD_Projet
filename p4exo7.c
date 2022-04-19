@@ -349,17 +349,9 @@ unsigned char* crypt_to_sha256 (char* message){
     return hashed_value_of_block;
 }
 
-/*Supprime un bloc, mais ne libere pas son author et les protected de sa liste de votes*/
+/*Supprime un bloc, mais ne libere pas son author et sa liste de votes*/
 void delete_block(Block *b){
     if (b != NULL){
-        CellProtected* tmp;
-        CellProtected* vote;
-        vote = b->votes;
-        while(vote){
-            tmp = vote;
-            vote = vote->next;
-            free(tmp);
-        }
         free(b->hash);
         if (b->previous_hash != NULL)
             free(b->previous_hash); 
@@ -367,7 +359,7 @@ void delete_block(Block *b){
     }
 }
 
-/*Supprime un bloc completement, sauf son auteur*/
+/*Supprime un bloc completement*/
 void full_delete_block(Block *b){
     if (b != NULL){
         free(b->author);

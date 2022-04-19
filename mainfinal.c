@@ -93,7 +93,13 @@ int main(){
             vote = vote->next;
         }
         //Tous les 10 votes soumis, un bloc contenant ces votes est créé
-        create_block(&tree, random_assesseur(assesseurs, NB_ASSESSEURS), D);
+        if (create_block(&tree, random_assesseur(assesseurs, NB_ASSESSEURS), D) == 0){
+            delete_list_keys(citoyens);
+            delete_list_keys(candidats);
+            delete_list_cell(votes);
+            full_delete_tree(tree);
+            return 1;
+        }
 
         nb_blocks_str = int_to_str(nb_blocks);
         if (!nb_blocks_str){
@@ -101,6 +107,7 @@ int main(){
             delete_list_keys(candidats);
             delete_list_cell(votes);
             free(assesseurs);
+            full_delete_tree(tree);
             return 1;
         }
         blockname = strjoin("block", nb_blocks_str, 0);
@@ -110,6 +117,7 @@ int main(){
             delete_list_cell(votes);
             free(assesseurs);
             free(nb_blocks_str);
+            full_delete_tree(tree);
             return 1;
         }
         free(nb_blocks_str);
@@ -121,6 +129,7 @@ int main(){
         
     }
     free(assesseurs);
+    full_delete_tree(tree);
     
     //Lecture du repertoire Blockchain et construction de l'arbre des blocs de declarations de votes
     CellTree *arbre_blocs = read_tree();
