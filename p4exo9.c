@@ -92,7 +92,8 @@ void create_block(CellTree** tree, Key* author, int d){
     }
     remove("Pending_votes.txt");
 
-    // full_delete_block(b);
+    free(b->author);
+    full_delete_node(node);
 }
 
 
@@ -117,6 +118,7 @@ void add_block(int d, char* name){
         } 
         free(filename);
     }
+    free(b->author);
     full_delete_block(b);
     remove("Pending_block");
 }
@@ -263,3 +265,4 @@ Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int
     }
     return gagnant;
 }
+
