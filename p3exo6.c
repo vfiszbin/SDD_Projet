@@ -69,7 +69,6 @@ int find_position(HashTable* t, Key* key){
 		i++;
 		if (i >= t->size) //si i depasse la taille du tableau
 			i = 0; 
-		printf("\nFINDPOS size=%d i=%d pos=%d\n", t->size, i, pos);
 	}
 	return i;
 }
