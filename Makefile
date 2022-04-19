@@ -64,3 +64,12 @@ p4exo9.o : p4exo9.c p4exo9.h
 clean :
 	rm -rf *.o
 	rm -f p?main
+	rm -f mainfinal
+
+	rm -f Blockchain/*
+	rm -f blocks.txt
+	rm -f candidates.txt
+	rm -f declarations.txt
+	rm -f keys.txt
+	rm -f Pending_block
+	rm -f Pending_votes.txt

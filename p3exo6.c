@@ -10,7 +10,6 @@ void supprime_declarations_non_valides(CellProtected **lcp){
 
 	while(c){
 		if (verify(c->data) == 0){ //la signature est invalide
-			printf("\nELEMENT INVALIDE\n");	
 			//Suppression de l'element de la liste chainee sans rompre la liste
 			//L'element est en tete de liste
 			if (prec == NULL){
@@ -125,7 +124,7 @@ int equal_keys(Key * k1, Key *k2){
 	return (k1->val == k2->val && k1->n == k2->n);
 }
 
-Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV){
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV, int *nb_votes_vainqueur){
 	//Cree la table de hachage des candidats
 	HashTable *hc = create_HashTable(candidates, sizeC);
 	if (!hc)
@@ -172,6 +171,7 @@ Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, i
 		}
 	}
 	pKey_c = hc->tab[pos_c]->key; //cle du gagnant
+	*nb_votes_vainqueur = max_votes; //sauvegarde le nb de votes du gagnant dans le pointeur
 	delete_hashtable(hc);
 	delete_hashtable(hv);
 	return pKey_c;

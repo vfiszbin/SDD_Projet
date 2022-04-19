@@ -4,13 +4,13 @@
 #include "p4exo8.h"
 #include "p4exo9.h"
 
-#define NB_CITOYENS 100
-#define NB_CANDIDATS 10
-#define NB_ASSESSEURS 10
+#define NB_CITOYENS 10
+#define NB_CANDIDATS 3
+#define NB_ASSESSEURS 5
 #define D 1 //le nombre de zeros par lequel la valeur hachee d'un bloc doit demarrer
 #define NB_VOTES_PAR_BLOC 10 
-#define SIZE_C 20 //taille table de hachage des candidats
-#define SIZE_V 200 //taille table de hachage des votants
+#define SIZE_C 10 //taille table de hachage des candidats
+#define SIZE_V 20 //taille table de hachage des votants
 
 
 /*Selectione les nb premiers citoyens de la liste citoyens pour officier en tant qu'assesseurs.
@@ -122,7 +122,15 @@ int main(){
         }
         free(nb_blocks_str);
         
-        add_block(D, blockname);
+        if (add_block(D, blockname) == 0){
+            delete_list_keys(citoyens);
+            delete_list_keys(candidats);
+            delete_list_cell(votes);
+            free(assesseurs);
+            free(blockname);
+            full_delete_tree(tree);
+            return 1;
+        }
         free(blockname);
         cpt=0;
         nb_blocks++;
@@ -140,10 +148,12 @@ int main(){
             return 1;
     }
 
-    print_tree2D(arbre_blocs, 0);
+    //print_tree2D(arbre_blocs, 0);
 
     //Calcul du vainqueur de l'election en comptabilisant les votes de la plus longue branche de l'arbre de blocs
-    Key* gagnant = compute_winner_BT(arbre_blocs, candidats, citoyens, SIZE_C, SIZE_V);
+    int nb_votes_vainqueur;
+    int nb_votes;
+    Key* gagnant = compute_winner_BT(arbre_blocs, candidats, citoyens, SIZE_C, SIZE_V, &nb_votes_vainqueur, &nb_votes);
     if (!gagnant){
         delete_list_keys(citoyens);
         delete_list_keys(candidats);
@@ -152,7 +162,8 @@ int main(){
         return 1;
     }
  
-    printf("Le candidat (%lx,%lx) remporte l'élection !\n", gagnant->val, gagnant->n);
+    printf("Le candidat (%lx,%lx) remporte l'élection avec %d voix sur %d, soit un score de %.02f%% !\n",
+    gagnant->val, gagnant->n, nb_votes_vainqueur, nb_votes, ((double)nb_votes_vainqueur/nb_votes)*100);
 
     //Libere la memoire
     delete_list_keys(citoyens);

@@ -102,27 +102,28 @@ int create_block(CellTree** tree, Key* author, int d){
 
 /*Verifie que le bloc dans Pending_block est valide. Si oui ecrit ce bloc dans un fichier name
 dans le repertoire Blockchain. Pending_block est supprime*/
-void add_block(int d, char* name){
+int add_block(int d, char* name){
     Block * b = lire_block("Pending_block");
     if (!b){
-        return;
+        return 0;
     }
 
     if (verify_block(b, d) == 1){ //si le bloc est valide
         char *filename = strjoin("Blockchain/", name, 0);
         if (!filename){
             full_delete_block(b);
-            return;
+            return 0;
         }
         if (ecrire_block(filename, b) == 0){
             full_delete_block(b);
             free(filename);
-            return;
+            return 0;
         } 
         free(filename);
     }
     full_delete_block(b);
     remove("Pending_block");
+    return 1;
 }
 
 /*Retourne 0 si deux chaine sont identique, la difference des valeurs ascii des premiers caracteres non identiques sinon*/
@@ -153,7 +154,7 @@ CellTree* read_tree(){
 		}
 		closedir(rep);
 
-        //allocation du tableau de blocks
+        //allocation du tableau de noeuds
         CellTree **T = malloc(sizeof(CellTree*) * nb_blocks);
         if( !T){
             closedir(rep);
@@ -191,7 +192,6 @@ CellTree* read_tree(){
                 }
                 free(filename);
                 T[i] = create_node(b);
-    
                 if (!T[i]){
                     for (j = 0; j < i; j++)
                         full_delete_node(T[j]);
@@ -204,7 +204,6 @@ CellTree* read_tree(){
 			}
 		}
         closedir(rep);
-            
 
         //recherche des fils de chaque noeud
         for(i = 0; i < nb_blocks; i++){
@@ -237,7 +236,7 @@ CellTree* read_tree(){
 }
 
 /*Determine le gagnant de l'election en comptabilisant les votes de la plus longue chaine de l'arbre tree*/
-Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int sizeC, int sizeV){
+Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int sizeC, int sizeV, int *nb_votes_vainqueur, int *nb_votes){
     //Extrait la liste des declarations de vote de la plus longue branche de l'arbre
     CellProtected *votes = fusion_votes_arbre(tree);
     if (!votes)
@@ -246,21 +245,17 @@ Key* compute_winner_BT(CellTree* tree, CellKey* candidates, CellKey* voters, int
     //Suppressions des declarations de vote non valides
     supprime_declarations_non_valides(&votes);
 
-    //Determination du vainqueur de l'eclection
-
-    printf("\nLISTE VOTES=\n");
-    print_list_cell_protected(votes);
-    //
+    //Calcul facultatif du nombre effectif de votes pour statistiques
     CellProtected *tmp = votes;
     int count = 0;
     while (tmp){
         count++;
         tmp = tmp->next;
     }
-    printf("\nNBVOTES=%d\n", count);
-    //
+    *nb_votes = count;
 
-    Key* gagnant = compute_winner(votes, candidates, voters, sizeC, sizeV);
+    //Determination du vainqueur de l'election
+    Key* gagnant = compute_winner(votes, candidates, voters, sizeC, sizeV, nb_votes_vainqueur);
     if (!gagnant){
         delete_list_cell(votes);
         return NULL;

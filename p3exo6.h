@@ -19,6 +19,6 @@ typedef struct hashtable{
 HashTable* create_HashTable(CellKey* keys, int size);
 int find_position(HashTable* t, Key* key);
 void delete_hashtable(HashTable* t);
-Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV);
+Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV, int *nb_votes_vainqueur);
 
 #endif
