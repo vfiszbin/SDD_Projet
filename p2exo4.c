@@ -147,7 +147,7 @@ int generate_random_data(int nv, int nc){
         pKey = tab_citoyens[i].clepublic;
         sKey = tab_citoyens[i].cleprive;
         random = rand() % nc;
-        mess = key_to_str(tab_candidats[random].clepublic); //vote pour une candidat aleatoirement choisi
+        mess = key_to_str(tab_candidats[random].clepublic); //vote pour un candidat aleatoirement choisi
         if (!mess){
             free_generate_random_data(nv, tab_citoyens, tab_candidats, f, f1, f2);
             return 0;
