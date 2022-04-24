@@ -139,7 +139,7 @@ int strncmp_unsigned(const unsigned char * s1, const unsigned char * s2, int n){
 }
 
 
-/*Lit tous les blos du repertoire Blockchain et retourne l'arbre correspondant a ces blocs*/
+/*Lit tous les blocs du repertoire Blockchain et retourne l'arbre correspondant a ces blocs*/
 CellTree* read_tree(){
     DIR *rep = opendir("./Blockchain/");
 	if (rep != NULL){
