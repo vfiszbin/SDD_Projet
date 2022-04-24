@@ -124,6 +124,8 @@ int equal_keys(Key * k1, Key *k2){
 	return (k1->val == k2->val && k1->n == k2->n);
 }
 
+/*Calcule le candidat gagnant parmi les candidats de la liste candidates, en comptabilisant les votes de la liste de declarations (valides)
+decl, et en verifiant que chaque citoyen ne vote qu'une fois à l'aide de la liste de citoyens voters*/
 Key* compute_winner(CellProtected* decl, CellKey* candidates, CellKey* voters, int sizeC, int sizeV, int *nb_votes_vainqueur){
 	//Cree la table de hachage des candidats
 	HashTable *hc = create_HashTable(candidates, sizeC);
