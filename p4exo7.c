@@ -284,7 +284,7 @@ char* block_to_str(Block* block){
     if (!key)
         return NULL;
 
-    //Recupere le pervious_hash
+    //Recupere le previous_hash
     char *previous_hash;
     if (block->previous_hash == NULL)
         previous_hash = "NULL"; //le bloc racine n'a pas de bloc precedent, on donne une valeur par defaut de 0
@@ -475,7 +475,7 @@ void temps_moyen_computeproofofwork (Block *B) {
      FILE* fic = fopen("temps_proof_of_work.txt","w");
      if(fic == NULL){
          printf("erreur à l’ouverture du fichier ");
-         return;;
+         return;
      }
      clock_t temps_initial;
      clock_t temps_final;

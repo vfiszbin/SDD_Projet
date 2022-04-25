@@ -264,7 +264,7 @@ int main(){
     free(test_k);
     full_delete_tree(test_tree);
     
-    if (add_block(2, "test_block") == 0)
+    if (add_block(2, "block1") == 0)
         return 1;
     
     CellTree *blockchain_tree = read_tree();
